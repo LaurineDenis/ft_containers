@@ -2,10 +2,11 @@
 #define VECTOR_HPP
 
 #include <memory>
-// #include <limits>
-// #include <vector>
-// #include <cstddef>
+#include <limits>
+#include <vector>
+#include <cstddef>
 #include <sstream>
+#include <iostream>
 
 
 namespace ft
@@ -49,7 +50,16 @@ namespace ft
 			//Constructor by copy
 			vector (const vector& x);
 
+		//-------------FONCTION-------------
+			//print
+			void print_vector()
+			{
+				for (int i = 0; i < _size_filled; i++)
+				{
+					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
+				}
+			};
+
 	};
 }
-
 #endif
