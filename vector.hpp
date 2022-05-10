@@ -41,7 +41,14 @@ namespace ft
 			};
 
 			//contructors fill one (remplir)
-			explicit vector (size_t n, const value_type& val = value_type(), const Alloc& alloc = Alloc());
+			explicit vector (size_t n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
+			{
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
+				for (_size_filled = 0; _size_filled < n; _size_filled++)
+				{
+					_array[_size_filled] = val;
+				}
+			};
 
 			//Constructor fill list (remplir)
 			template <class InputIte>
@@ -59,6 +66,46 @@ namespace ft
 					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
 				}
 			};
+
+			//size
+			size_t	size()
+			{
+				return (_size_filled);
+			}
+
+			//resize
+			void resize (size_type n, value_type val = value_type())
+			{
+				if (n <= _size_filled)
+				{
+					for(n; n <_size_filled; n++)
+						pop_back();
+				}
+				else if (_size_alloc > n)
+				{
+					T tmp[n];
+					for (size_type i = 0; i < n; i++)
+						tmp[i] = _array[i];
+					_alloc.deallocate(_array, sizeof(T *) * _size);
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
+					for (size_type i = 0; i < n; i++)
+						_array[i] = tmp[i];
+				}
+				else
+				{               
+					reserve(n);
+					for(_size_filled; _size_filled < n; _size_filled++)
+						_array[_size_filled]= val;
+				}
+
+				//empty
+				bool empty() const
+				{
+					return (_size_filled == 0);
+				}
+			}
+
+
 
 	};
 }
