@@ -1,29 +1,25 @@
 NAME = ft_containers
 SRCS = main.cpp
-
-SRCS_NAME = $(addprefix "includes"/, $(SRCS))
-
-OBJ = ${SRCS_NAME:.cpp=.o}
-OBJS = $(addprefix "objs"/, $(OBJ))
+HEADER = vector.hpp
+OBJ = ${SRCS:.cpp=.o}
 
 RM          = rm -rf
 CC          = c++
 CFLAGS      = -Wall -Wextra -Werror -std=c++98
 
-objs/%.o: 		includes/%.cpp
-				@mkdir -p objs
+%.o: 			%.cpp
 				@${CC} ${CFLAGS} -c $< -o $@
 				
 all:          	${NAME}
 
-$(NAME):        ${OBJS}
-				@$(CC) ${CFLAGS} -o ${NAME} ${OBJS}
+$(NAME):        ${OBJ} ${HEADER}
+				@$(CC) ${CFLAGS} -o ${NAME} ${OBJ}
 				@echo "\x1b[32m 👯‍♀️ Compilation effectuée 👯‍♀️\x1b[0m" 
 clean:
-				@${RM} objs
+				@${RM} ${OBJ}
 			   
 fclean:			clean
-				@${RM} objs
+				@${RM} ${OBJ}
 				@${RM} ${NAME}
 				@echo "\x1b[35m 😈 Tout a été supprimé 😈 \x1b[0m"
 				

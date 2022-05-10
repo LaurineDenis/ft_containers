@@ -1,4 +1,7 @@
+#include "vector.hpp"
+
 int main()
 {
-    return ;
+    ft::vector<std::string> vector_str;
+    return 0;
 }
