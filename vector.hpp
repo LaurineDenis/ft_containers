@@ -64,6 +64,12 @@ namespace ft
 
 			};
 
+			// operator =
+			vector& operator= (const vector& x)
+			{
+
+			};
+
 		//-------------FONCTION-------------
 
 			//print
@@ -309,26 +315,162 @@ namespace ft
 			iterator insert (iterator position, const value_type& val)
 			{
 				iterator it = position;
+				reserve(_size_filled + 1);
+				if (it == end())
+				{
+					push_back(val);
+					return (position);
+				}
 				T tmp[_size_filled + 1];
-				for (size_t i = 0; i != it.; i++)
+				for (iterator i = begin(); i != position; i++)
 						tmp[i] = _array[i];
-				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				tmp[i] = val;
+				for (iterator i = position; i != end(); i++)
+						tmp[i] = _array[i];
 				_size_filled++;
-				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_filled));
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-
+				return(position);
 			};
 
     		void insert (iterator position, size_type n, const value_type& val)
 			{
-
+				iterator it = position;
+				reserve(n);
+				if (it == end())
+				{
+					for (size_t i = 0; i != n; i++)
+						push_back(val);
+				}
+				T tmp[n];
+				for (iterator i = begin(); i != position; i++)
+						tmp[i] = _array[i];
+				for (size_t y = 0; y != n; y++)
+						tmp[i++] = val;
+				for (size_type i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
 			};
 	
 		template <class InputIterator>
    			void insert (iterator position, InputIterator first, InputIterator last)
 			{
+				iterator it = position;
+				for (iterator i = first; i != last; i++);
+					size_t count++;
+				reserve(count + _size_filled);
+				if (it == end())
+				{
+					for (iterator i = first; i != last; i++)
+						_array[i] = i;// je ne sais pas si on peut ecrire comme ca ou s'il faut mettre *i
+				}
+				T tmp[count + _size_filled];
+				for (iterator i = begin(); i != position; i++)
+						tmp[i] = _array[i];
+				for (iterator y = first; y != last; y++)
+						tmp[i++] = y;
+				for (size_type i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
+			};
+		
+		// swap 
+			void swap (vector& x)
+			{
+				T *tmp_array = x._array;
+				size_t tmp_size_filled = x._size_filled;
+				size_t tmp_size_alloc = x._size_alloc;
+				x._array = _array;
+				x._size_filled = _size_filled;
+				x._size_alloc = _size_alloc;
+				_array = tmp_array;
+				_size_filled = tmp_size_filled;
+				_size_alloc = tmp_size_alloc;
+			};
 
+		//-------------ALLOCATOR-------------
+
+			allocator_type get_allocator() const
+			{
+				return (this->_alloc); // Renvoie une copie de l'objet d'allocation associé au vecteur.
+			};
+
+		//-------------NON-MEMBER FUNCTION OVERLOADS-------------
+
+		// relational operators ==
+		template <class T, class Alloc>
+			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				if (lhs.size() != rhs.size())
+					return (false);
+				iterator first_lhs = lhs.begin();
+				iterator first_rhs = rhs.begin();
+				while (first_lhs != lhs.end() && first_rhs != rhs.end())
+				{
+					if (&& first_lhs != first_rhs)
+						return (false);
+					first_lhs++;
+					first_rhs++;
+				}
+				return (true);
+			}
+				
+			};
+		// relational operators !=
+		template <class T, class Alloc>
+			bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				return (!(lhs == rhs));
+			};
+		
+		// relational operators < // Renvoie true si la plage [first1,last1)(donc lhs) est lexicographiquement inférieure à la plage [first2,last2) (donc rhs).
+		template <class T, class Alloc>
+			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				if (lhs == rhs)
+					return (false);
+				iterator first_lhs = lhs.begin();
+				iterator first_rhs = rhs.begin();
+				while (first_lhs != lhs.end() && first_rhs != rhs.end())
+				{
+					first_lhs++;
+					first_rhs++;
+				}
+				if (first_lhs != lhs.end) // on regarde si on a reussi a aller a la fin du vecteur 
+					return (true); // si c'est pas le cas ca veut dire que rhs a terminé la boucle mais que lhs nn; donc elle est plus petite
+				return (false);
+			};
+		
+		// relational operators <=
+		template <class T, class Alloc>
+			bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				if (lhs == rhs)
+					return (true);
+				return (!(lhs < rhs));
+			};
+		
+		// relational operators >
+		template <class T, class Alloc>
+			bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				if (lhs == rhs)
+					return (false);
+				return (!(lhs < rhs));
+			};
+		
+		// relational operators >=
+		template <class T, class Alloc>
+			bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+			{
+				if (lhs == rhs)
+					return (true);
+				return (!(lhs < rhs));
+			};
+		
+		// swap <vector>
+		template <class T, class Alloc>
+  			void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) // il se comporte comme si x.swap(y) a été appelé.
+			{
+				return(x.swap(y));
 			};
 	};
 }
