@@ -330,6 +330,70 @@ namespace ft
 			{
 
 			};
+
+			//erase only one element
+			iterator erase (iterator position)
+			{
+				T		tmp[_size_filled - 1];
+				iterator	it = begin();
+				int			j;
+				j = 0;
+				for (it = 0; it < end(); it++)
+				{
+					if (it != position)
+						tmp[j] = it;
+					j++;
+				}
+				_size_filled--;
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				for (size_t i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
+			};
+
+			//erase an range de first(inclu) a last(non inclu) 
+			iterator erase (iterator first, iterator last)
+			{
+				T		tmp[_size_filled - 1];
+				iterator	it = begin();
+				int			j;
+				j = 0;
+				for (it = 0; it < end(); it++)
+				{
+					if (it == first)
+					{
+						while (first != last && it != end())
+						{
+							first++;
+							it++;
+							_size_filled--;
+						}
+					}
+					tmp[j] = it;
+					j++;
+				}
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				for (size_t i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
+			};
+
+			//clear suprimme tous les elements du tab
+			void clear()
+			{
+				for (_size_filled; _size_filled >= 0; _size_filled--)
+				{
+					pop_back();
+				}
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
+			};
+			
+			//get_allocator retourne l'allocateur utilisé
+			allocator_type get_allocator() const
+			{
+
+			};
 	};
 }
 #endif
