@@ -67,8 +67,11 @@ namespace ft
 			// operator =
 			vector& operator= (const vector& x)
 			{
-
+				
 			};
+
+			//destructeur
+			~vector(){};
 
 		//-------------FONCTION-------------
 
@@ -135,7 +138,7 @@ namespace ft
 			//size
 			size_t	size()
 			{
-				return ( );
+				return ( _size_filled);
 			};
 			
 			//max_size
@@ -147,7 +150,7 @@ namespace ft
 			//resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				if (n <=  )
+				if (n <= _size_filled)
 				{
 					for(n; n < ; n++)
 						pop_back();
@@ -179,7 +182,7 @@ namespace ft
 			//empty
 			bool empty() const
 			{
-				return (  == 0);
+				return ( _size_filled == 0);
 			};
 
 			//reserve => Réaloue plus grand si besoin donc change seulement le size_alloc
