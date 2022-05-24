@@ -18,9 +18,21 @@ namespace ft
 
 		//----------------DEFINE----------------
 
-			typedef		Alloc	allocator_type;
-			typedef		T		value_type;
-			typedef		size_t	size_type;
+			typedef				Alloc							allocator_type;
+			typedef				T								value_type;
+			typedef				size_t							size_type;
+			typedef typename	Alloc::reference				reference;
+			typedef typename	Alloc::const_reference			const_reference;
+			typedef typename	Alloc::pointer					pointer;
+			typedef typename	Alloc::const_pointer			const_pointer;
+			typedef				Iterator<T>						iterator;
+			typedef				ConstIterator<T>				const_iterator;
+			typedef				ReverseIterator<iterator>		reverse_iterator;
+			typedef				ConstReverseIterator<iterator>	const_reverse_iterator;
+			class				OutOfRange : public std::exception
+			{ virtual const char *what() const throw(); };
+			class				length_error : public std::exception
+			{ virtual const char *what() const throw(); };
 
 		private :
 
@@ -36,54 +48,84 @@ namespace ft
 		//-------------CONSTRUCTORS-------------
 
 			//contructors by default
-			explicit vector (const Alloc& alloc = Alloc()): _size_alloc(0),  (0), _alloc(alloc)
+			explicit vector (const Alloc& alloc = Alloc()): _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 			};
 
 			//contructors fill one (remplir)
-			explicit vector (size_t n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n),  (0), _alloc(alloc)
+			explicit vector (size_t n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
 			{
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
-				for (  = 0;   < n;  ++)
+				for ( _size_filled= 0; _size_filled < n; _size_filled++)
 				{
-					_array[ ] = val;
+					_array[_size_filled] = val;
 				}
 			};
 
 			//Constructor fill list (remplir)
 			template <class InputIte>
-			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc())
+			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
 			{
-
+				while (first != last)
+				{
+					this->push_back(*first);
+					first++;
+				}
 			};
 
 			//Constructor by copy
-			vector (const vector& x)
+			vector (const vector& x) : _alloc(v._alloc)
 			{
-
+				if (*this == x)
+					return;
+				this->insert(begin(), x.begin(), x.end());
 			};
 
 			// operator =
 			vector& operator= (const vector& x)
 			{
-				
+				if (*this == x)
+					return *this;
+				_array = x._array;
+				_size_alloc = x._size_alloc;
+				_size_filled = x._size_filled;
+				return *this;
 			};
 
 			//destructeur
-			~vector(){};
+			~vector()
+			{
+				this->clear();
+				if (_size_alloc > 0)
+				{
+					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+					_size_alloc = 0;
+				}
+			};
 
 		//-------------FONCTION-------------
 
 			//print
 			void			print_vector()
 			{
-				for (int i = 0; i <  ; i++)
+				for (int i = 0; i < _size_filled; i++)
 				{
 					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
 				}
 			};
 
+		//-------------EXCEPTIONS------------
+
+			const char		*Vector<T, Alloc>::OutOfRange::what() const throw()
+			{
+				return "ft::Vector error : Out of range!\n";
+			}
+
+			const char		*Vector<T, Alloc>::length_error::what() const throw()
+			{
+				return "ft::Vector error : Length error!\n";
+			}
 
 		//-------------ITERATORS-------------
 
@@ -152,7 +194,7 @@ namespace ft
 			{
 				if (n <= _size_filled)
 				{
-					for(n; n < ; n++)
+					for(n; n < _size_filled; n++)
 						pop_back();
 				}
 				else if (_size_alloc > n)
@@ -168,8 +210,8 @@ namespace ft
 				else
 				{               
 					reserve(n);
-					for( size_t i = 0; i < n;  i++)
-						_array[i]= val;
+					for( size_t _size_filled = 0; _size_filled < n;  _size_filled++)
+						_array[_size_filled]= val;
 				}
 			};
 
@@ -190,13 +232,13 @@ namespace ft
 			void			reserve (size_type n)
 			{
 				if (n > max_size())
-					throw exception;
+					throw Vector::length_error();
 				if (_size_alloc < n)
 				{
 					//realoue plus grand
 					T			tmp[_size_alloc + n];
 					size_type	tmp_size;
-					for (int i = 0; i <  ; i++)
+					for (int i = 0; i < _size_filled ; i++)
 						tmp[i] = _array[i];
 					_array.deallocate(_array, sizeof(T *) * _size_alloc);
 					tmp_size = _size_alloc;
@@ -211,8 +253,8 @@ namespace ft
 			// operator [] Élément d'accès Renvoie une référence à l'élément à la position n dans le vecteur
 			reference operator[] (size_type n)
 			{
-				// if (n > _size_filled || n < 0)
-				// 	throw exception; // out of range  
+				if (n > _size_filled || n < 0)
+					throw Vector::OutOfRange(); // out of range  
 			// ON NE DOIT PAS FAIRE LES VERIFICATION --> CHELOU
 				return (_array[n]);
 			};
@@ -220,8 +262,8 @@ namespace ft
 			// const operator []
 			const_reference operator[] (size_type n) const
 			{
-				// if (n >= _size_filled || n < 0)
-				// 	throw exception; // out of range 
+				if (n >= _size_filled || n < 0)
+					throw Vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -229,7 +271,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw exception; // out of range 
+					throw Vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -237,7 +279,7 @@ namespace ft
 			const_reference at (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw exception; // out of range 
+					throw Vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -264,6 +306,7 @@ namespace ft
 			{
 				return (_array[_size_filled - 1]);
 			};
+			
 		//-------------MODIFIERS-------------
 
 		// assign Affecte un nouveau contenu au vecteur, en remplaçant son contenu actuel et en modifiant sa taille en conséquence.
@@ -396,6 +439,67 @@ namespace ft
 				return (this->_alloc); // Renvoie une copie de l'objet d'allocation associé au vecteur.
 			};
 
+
+			//erase only one element
+			iterator erase (iterator position)
+			{
+				T		tmp[_size_filled - 1];
+				iterator	it = begin();
+				int			j;
+				j = 0;
+				for (it = 0; it < end(); it++)
+				{
+					if (it != position)
+						tmp[j] = it;
+					j++;
+				}
+				_size_filled--;
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				for (size_t i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
+			};
+
+			//erase an range de first(inclu) a last(non inclu) 
+			iterator erase (iterator first, iterator last)
+			{
+				T		tmp[_size_filled - 1];
+				iterator	it = begin();
+				int			j;
+				j = 0;
+				for (it = 0; it < end(); it++)
+				{
+					if (it == first)
+					{
+						while (first != last && it != end())
+						{
+							first++;
+							it++;
+							_size_filled--;
+						}
+					}
+					tmp[j] = it;
+					j++;
+				}
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				for (size_t i = 0; i < _size_filled; i++)
+					_array[i] = tmp[i];
+			};
+
+			//clear suprimme tous les elements du tab
+			void clear()
+			{
+				for (_size_filled; _size_filled >= 0; _size_filled--)
+				{
+					pop_back();
+				}
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
+			};
+			
+	};
+
 		//-------------NON-MEMBER FUNCTION OVERLOADS-------------
 
 		// relational operators ==
@@ -414,8 +518,6 @@ namespace ft
 					first_rhs++;
 				}
 				return (true);
-			}
-				
 			};
 		// relational operators !=
 		template <class T, class Alloc>
@@ -475,6 +577,6 @@ namespace ft
 			{
 				return(x.swap(y));
 			};
-	};
 }
+
 #endif

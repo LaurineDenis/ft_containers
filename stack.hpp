@@ -14,9 +14,9 @@ namespace ft
         public :
 
         //----------------DEFINE----------------
-            typedef	Container                               container_type;
-            typedef	typename	vector<T>::value_type		value_type;
-			typedef	typename 	vector<T>::size_type	    size_type;
+            typedef	            Container                   container_type;
+            typedef	typename	Container<T>::value_type	value_type;
+			typedef	typename 	Container<T>::size_type	    size_type;
 
 
         private :
@@ -28,9 +28,13 @@ namespace ft
         public :
 
         //-------------CONSTRUCTORS-------------
-        // doit on faire les constructeurs que vector a ? 
+        // doit on faire les constructeurs que vector a ? NON
             //contructors by default
             explicit stack (const container_type& ctnr = container_type()): _container(ctnr)
+            {};
+
+            // constructor by copy
+	        stack(stack const &src) : _cont(src._cont) 
             {};
 
 			//destructeur
@@ -71,7 +75,7 @@ namespace ft
             {
                   _container.pop_back(val);
             }
-
+    };
 
     //-------------NON-MEMBER FUNCTION OVERLOADS-------------
 
@@ -91,10 +95,11 @@ namespace ft
 
             //relational operators <
             template <class T, class Container>
-                bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+                bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
                 {
                      return (lhs._container < rhs._container);
                 };
+                
             //relational operators <=
             template <class T, class Container>
                 bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
@@ -121,6 +126,6 @@ namespace ft
 					    return (true);
 				    return (!(lhs._container < rhs._container));
 			    };
-    };
 }
+
 #endif
