@@ -1,12 +1,13 @@
 #ifndef VECTOR_HPP
-#define VECTOR_HPP
+# define VECTOR_HPP
 
-#include <memory>
-#include <limits>
-#include <vector>
-#include <cstddef>
-#include <sstream>
-#include <iostream>
+# include <limits>
+# include <memory>
+# include <vector>
+# include <cstddef>
+# include <sstream>
+# include <iostream>
+# include "iterator.hpp"
 
 
 namespace ft

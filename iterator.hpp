@@ -1,0 +1,769 @@
+#ifndef ITERATOR_HPP
+#define ITERATOR_HPP
+
+namespace ft
+{
+	template <typename T>
+	class iterator
+	{
+        public :
+            typedef             T				value_type;
+            typedef             value_type      &reference;
+            typedef             value_type*     *pointer;
+            typedef typename    std::ptrdiff_t  difference_type; // on met ptrdiff_t carr dans iterator_trait c'est comme ca qu'on le définit
+        // ptrdiff_t C'est un type capable de représenter le résultat de toute opération de soustraction de pointeur valide.
+
+
+
+        // ON EST CENSE METTRE CA : typedef Category  iterator_category;
+        // MAIS JE PENSE QUE C EST POUR PRECISER LA CATEGORIE DE L ITERATOR DONC LES FOWARD, BIDIRECTION
+        // ETC .... DONC COMME ON FAIT TOUT D'UN COUP JE PENSE ON S'EN FOU
+        private :
+
+            pointer _ptr;
+
+        public :
+
+
+        // Où X est un type d'itérateur,
+        // a et b sont des objets de ce type d'itérateur,
+        // t est un objet du type pointé par le type d'itérateur 
+        // n est un different type
+		//-------------CONSTRUCTORS-------------
+            
+            //contructors by default
+            iterator(void){};
+
+            //contructors fill one
+            iterator(pointer ptr): _ptr(ptr){};
+
+            //Constructor by copy
+            iterator(const iterator &src)
+            {
+                if (*this != src)
+					*this = src;
+                return (*this);
+            }
+           
+            // operator =
+			iterator& operator= (const iterator& src)
+            {
+                _ptr = src._ptr;
+                return (*this);
+            }
+
+            //destructeur
+            ~iterator(){}; // virtual ou pas ?
+
+        //-------------FONCTION INCREMENT DECREMENT-----------
+            // ++a 
+            iterator operator ++()
+            {
+                _ptr++;
+                return (*this);
+            }
+
+            // a++ int
+            // quand on fait ça on appel ++a, donc on doit enregistrer la position de base
+            // retrouner la position de base pour apres faire appel à la fonction du dessus qui affichera la modification
+            iterator operator ++(int)
+            {
+                iterator index; // on déclare un index qui prend la position de base
+                index = *this;
+                ++_ptr; // on incrrement _ptr (donc appel a la fonction du haut)
+                return (index); // et on envoie l'index sans l'incrementation 
+            };
+            
+            // --a
+            iterator operator --()
+            {
+                _ptr--;
+                return (*this);
+            }
+
+            // a-- int
+            iterator operator --(int)
+            {
+                iterator index;
+                index = *this;
+                --_ptr;
+                return (index);
+            };
+        
+        //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
+            // a + n ON DIT QUE N EST UN DIFFERENT TYPE DONC JE PEUX PAS METTRE INT JE PENSE
+            iterator operator +(difference_type n) // on fait une copie car on ne l'assigne pas comme avec a += n 
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr++;
+                return (tmp);
+            };
+            // n + a ? 
+
+            // a - n
+            iterator operator -(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr--;
+                return (tmp);
+            };
+
+            // a + b donc deux iterator ?
+            difference_type operator +(iterator b)
+            {
+                return (_ptr + b._ptr);
+            };
+
+            // a - b
+            difference_type operator -(iterator b)
+            {
+                return (_ptr - b._ptr);
+            };
+
+        //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
+            // a += n on fait pas de copie car on l'assigne directement à a
+            iterator operator +(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr++;
+                return (*this);
+            };
+            // a -= n
+             iterator operator -(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr--;
+                return (*this);
+            };
+
+         //-------------BOOLEANS -----------
+            //==
+            bool operator== (const iterator& b) 
+            {
+                return (_ptr == b._ptr);
+            };
+
+            //!=
+            bool operator!= (const iterator& b) 
+            {
+                return (_ptr != b._ptr);
+            };
+
+            // <
+            bool operator< (const iterator& b) 
+            {
+                return (_ptr < b._ptr);
+            };
+
+            // <=
+            bool operator<= (const iterator& b) 
+            {
+                return (_ptr <= b._ptr);
+            };
+
+            // >
+            bool operator> (const iterator& b) 
+            {
+                return (_ptr > b._ptr);
+            };
+
+            // >=
+            bool operator>= (const iterator& b) 
+            {
+                return (_ptr >= b._ptr);
+            };
+
+        //-------------REFERENCE & POINTEUR -----------
+            // a[n]
+            reference operator[](difference_type n)
+            {
+                iterator tmp = *this;
+                if (n < 0)
+                    tmp -= n;
+                else
+                    tmp += n;
+                return (*tmp);
+            }
+
+            // *a
+            reference operator* ()
+            {
+                return (*_ptr);
+            };
+
+            // ->
+            pointer operator->()
+            {
+                return (_ptr);
+            };
+    };
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------CONST_ITERATOR--------------
+    template <typename T>
+	class const_iterator
+	{
+        public :
+            typedef             T				value_type;
+            typedef             value_type      &const_reference;
+            typedef             value_type*     *const_pointer;
+            typedef typename    std::ptrdiff_t  difference_type; 
+
+        private :
+
+            pointer _ptr;
+
+        public :
+
+		//-------------CONSTRUCTORS-------------
+            
+            //contructors by default
+            const_iterator(void){};
+
+            //contructors fill one
+            const_iterator(pointer ptr): _ptr(ptr){};
+
+            //Constructor by copy
+            const_iterator(const iterator &src)
+            {
+                if (*this != src)
+					*this = src;
+                return (*this);
+            }
+           
+            // operator =
+			const_iterator& operator= (const iterator& src)
+            {
+                _ptr = src._ptr;
+                return (*this);
+            }
+
+            //destructeur
+            ~const_iterator(){}; // virtual ou pas ?
+
+        //-------------FONCTION INCREMENT DECREMENT-----------
+            // ++a 
+            const_iterator operator ++()
+            {
+                _ptr++;
+                return (*this);
+            }
+
+            // a++ int
+            const_iterator operator ++(int)
+            {
+                iterator index; 
+                index = *this;
+                ++_ptr; 
+                return (index); 
+            };
+            
+            // --a
+            const_iterator operator --()
+            {
+                _ptr--;
+                return (*this);
+            }
+
+            // a-- int
+            const_iterator operator --(int)
+            {
+                iterator index;
+                index = *this;
+                --_ptr;
+                return (index);
+            };
+        
+        //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
+            // a + n 
+            const_iterator operator +(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr++;
+                return (tmp);
+            };
+            // n + a ? 
+
+            // a - n
+            const_iterator operator -(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr--;
+                return (tmp);
+            };
+
+            // a + b donc deux iterator ?
+            difference_type operator +(iterator b)
+            {
+                return (_ptr + b._ptr);
+            };
+
+            // a - b
+            difference_type operator -(iterator b)
+            {
+                return (_ptr - b._ptr);
+            };
+
+        //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
+            // a += n
+            const_iterator operator +(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr++;
+                return (*this);
+            };
+            // a -= n
+            const_iterator operator -(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr--;
+                return (*this);
+            };
+
+         //-------------BOOLEANS -----------
+            //==
+            bool operator== (const iterator& b) 
+            {
+                return (_ptr == b._ptr);
+            };
+
+            //!=
+            bool operator!= (const iterator& b) 
+            {
+                return (_ptr != b._ptr);
+            };
+
+            // <
+            bool operator< (const iterator& b) 
+            {
+                return (_ptr < b._ptr);
+            };
+
+            // <=
+            bool operator<= (const iterator& b) 
+            {
+                return (_ptr <= b._ptr);
+            };
+
+            // >
+            bool operator> (const iterator& b) 
+            {
+                return (_ptr > b._ptr);
+            };
+
+            // >=
+            bool operator>= (const iterator& b) 
+            {
+                return (_ptr >= b._ptr);
+            };
+
+        //-------------REFERENCE & POINTEUR -----------
+            // a[n]
+            const_reference operator[](difference_type n)
+            {
+                iterator tmp = *this;
+                if (n < 0)
+                    tmp -= n;
+                else
+                    tmp += n;
+                return (*tmp);
+            }
+
+            // *a
+            const_reference operator* ()
+            {
+                return (*_ptr);
+            };
+
+            // ->
+            const_pointer operator->()
+            {
+                return (_ptr);
+            };
+    };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+    //-------REVERSE_ITERATOR--------------
+    template <typename T>
+	class reverse_iterator
+	{
+        public :
+            typedef             T				value_type;
+            typedef             value_type      &reverse_reference;
+            typedef             value_type*     *reverse_pointer;
+            typedef typename    std::ptrdiff_t  difference_type; 
+
+        private :
+
+            pointer _ptr;
+
+        public :
+
+		//-------------CONSTRUCTORS-------------
+            
+            //contructors by default
+            reverse_iterator(void){};
+
+            //contructors fill one
+            reverse_iterator(pointer ptr): _ptr(ptr){};
+
+            //reverseructor by copy
+            reverse_iterator(reverse iterator &src)
+            {
+                if (*this != src)
+					*this = src;
+                return (*this);
+            }
+           
+            // operator =
+			reverse_iterator& operator= (reverse iterator& src)
+            {
+                _ptr = src._ptr;
+                return (*this);
+            }
+
+            //destructeur
+            ~reverse_iterator(){}; // virtual ou pas ?
+
+        //-------------FONCTION INCREMENT DECREMENT-----------
+            // ++a 
+            reverse_iterator operator ++()
+            {
+                _ptr--;
+                return (*this);
+            }
+
+            // a++ int
+            reverse_iterator operator ++(int)
+            {
+                iterator index; 
+                index = *this;
+                --_ptr; 
+                return (index); 
+            };
+            
+            // --a
+            reverse_iterator operator --()
+            {
+                _ptr++;
+                return (*this);
+            }
+
+            // a-- int
+            reverse_iterator operator --(int)
+            {
+                iterator index;
+                index = *this;
+                ++_ptr;
+                return (index);
+            };
+        
+        //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
+            // a + n 
+            reverse_iterator operator +(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr--;
+                return (tmp);
+            };
+            // n + a ? 
+
+            // a - n
+            reverse_iterator operator -(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr++;
+                return (tmp);
+            };
+
+            // a + b donc deux iterator ?
+            difference_type operator +(iterator b)
+            {
+                return (_ptr - b._ptr);
+            };
+
+            // a - b
+            difference_type operator -(iterator b)
+            {
+                return (_ptr + b._ptr);
+            };
+
+        //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
+            // a += n
+            reverse_iterator operator +(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr--;
+                return (*this);
+            };
+            // a -= n
+            reverse_iterator operator -(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr++;
+                return (*this);
+            };
+
+         //-------------BOOLEANS -----------
+            //==
+            bool operator== (const iterator& b) 
+            {
+                return (_ptr == b._ptr);
+            };
+
+            //!=
+            bool operator!= (const iterator& b) 
+            {
+                return (_ptr != b._ptr);
+            };
+
+            // <
+            bool operator< (const iterator& b) 
+            {
+                return (_ptr < b._ptr);
+            };
+
+            // <=
+            bool operator<= (const iterator& b) 
+            {
+                return (_ptr <= b._ptr);
+            };
+
+            // >
+            bool operator> (const iterator& b) 
+            {
+                return (_ptr > b._ptr);
+            };
+
+            // >=
+            bool operator>= (const iterator& b) 
+            {
+                return (_ptr >= b._ptr);
+            };
+
+        //-------------REFERENCE & POINTEUR -----------
+            // a[n]
+            reverse_reference operator[](difference_type n)
+            {
+                iterator tmp = *this;
+                if (n < 0)
+                    tmp -= n;
+                else
+                    tmp += n;
+                return (*tmp);
+            }
+
+            // *a
+            reverse_reference operator* ()
+            {
+                return (*_ptr);
+            };
+
+            // ->
+            reverse_pointer operator->()
+            {
+                return (_ptr);
+            };
+    };
+    //-------------------------------------------------------------------------------------------------------------------------------------------------
+    //-------CONST_REVERSE_ITERATOR--------------
+    
+    template <typename T>
+	class const_reverse_iterator
+	{
+        public :
+            typedef             T				value_type;
+            typedef             value_type      &const_reverse_reference;
+            typedef             value_type*     *const_reverse_pointer;
+            typedef typename    std::ptrdiff_t  difference_type; 
+
+        private :
+
+            pointer _ptr;
+
+        public :
+
+		//-------------CONSTRUCTORS-------------
+            
+            //contructors by default
+            const_reverse_iterator(void){};
+
+            //contructors fill one
+            const_reverse_iterator(pointer ptr): _ptr(ptr){};
+
+            //const_reverseructor by copy
+            const_reverse_iterator(const_reverse iterator &src)
+            {
+                if (*this != src)
+					*this = src;
+                return (*this);
+            }
+           
+            // operator =
+			const_reverse_iterator& operator= (const_reverse iterator& src)
+            {
+                _ptr = src._ptr;
+                return (*this);
+            }
+
+            //destructeur
+            ~const_reverse_iterator(){}; // virtual ou pas ?
+
+        //-------------FONCTION INCREMENT DECREMENT-----------
+            // ++a 
+            const_reverse_iterator operator ++()
+            {
+                _ptr--;
+                return (*this);
+            }
+
+            // a++ int
+            const_reverse_iterator operator ++(int)
+            {
+                iterator index; 
+                index = *this;
+                --_ptr; 
+                return (index); 
+            };
+            
+            // --a
+            const_reverse_iterator operator --()
+            {
+                _ptr++;
+                return (*this);
+            }
+
+            // a-- int
+            const_reverse_iterator operator --(int)
+            {
+                iterator index;
+                index = *this;
+                ++_ptr;
+                return (index);
+            };
+        
+        //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
+            // a + n 
+            const_reverse_iterator operator +(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr--;
+                return (tmp);
+            };
+            // n + a ? 
+
+            // a - n
+            const_reverse_iterator operator -(difference_type n)
+            {
+                iterator tmp;
+                tmp = *this;
+                for (difference_type i = 0; i < n; i++)
+                    tmp._ptr++;
+                return (tmp);
+            };
+
+            // a + b donc deux iterator ?
+            difference_type operator +(iterator b)
+            {
+                return (_ptr - b._ptr);
+            };
+
+            // a - b
+            difference_type operator -(iterator b)
+            {
+                return (_ptr + b._ptr);
+            };
+
+        //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
+            // a += n
+            const_reverse_iterator operator +(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr--;
+                return (*this);
+            };
+            // a -= n
+            const_reverse_iterator operator -(difference_type n)
+            {
+                for (difference_type i = 0; i < n; i++)
+                    _ptr++;
+                return (*this);
+            };
+
+         //-------------BOOLEANS -----------
+            //==
+            bool operator== (const iterator& b) 
+            {
+                return (_ptr == b._ptr);
+            };
+
+            //!=
+            bool operator!= (const iterator& b) 
+            {
+                return (_ptr != b._ptr);
+            };
+
+            // <
+            bool operator< (const iterator& b) 
+            {
+                return (_ptr < b._ptr);
+            };
+
+            // <=
+            bool operator<= (const iterator& b) 
+            {
+                return (_ptr <= b._ptr);
+            };
+
+            // >
+            bool operator> (const iterator& b) 
+            {
+                return (_ptr > b._ptr);
+            };
+
+            // >=
+            bool operator>= (const iterator& b) 
+            {
+                return (_ptr >= b._ptr);
+            };
+
+        //-------------REFERENCE & POINTEUR -----------
+            // a[n]
+            const_reverse_reference operator[](difference_type n)
+            {
+                iterator tmp = *this;
+                if (n < 0)
+                    tmp -= n;
+                else
+                    tmp += n;
+                return (*tmp);
+            }
+
+            // *a
+            const_reverse_reference operator* ()
+            {
+                return (*_ptr);
+            };
+
+            // ->
+            const_reverse_pointer operator->()
+            {
+                return (_ptr);
+            };
+    };
+}
+
+#endif
