@@ -1,9 +1,8 @@
 #ifndef STACK_HPP
-#define STACK_HPP
+# define STACK_HPP
 
-#include <deque>
-#include "vector.hpp"
-#include <iostream>
+# include "vector.hpp"
+# include <iostream>
 
 
 namespace ft
@@ -39,6 +38,8 @@ namespace ft
 
 			//destructeur
 			~stack(){};
+
+            //  on fait pas l'assignation ? 
 
         //-------------FONCTION-------------
             //empty

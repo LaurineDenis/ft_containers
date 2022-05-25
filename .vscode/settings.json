@@ -16,5 +16,6 @@
         "initializer_list": "cpp",
         "map": "cpp",
         "unordered_map": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Enabled"
 }
