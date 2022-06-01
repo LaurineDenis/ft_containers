@@ -49,8 +49,8 @@ namespace ft
 		//---------------VALUES----------------
 
 			T				*_array;		//tableau
-			size_t			_size_alloc;	//taille allouée
-			size_t			 _size_filled;	//taille remplie (index)
+			size_type		_size_alloc;	//taille allouée
+			size_type		_size_filled;	//taille remplie (index)
 			allocator_type	_alloc;			//malloc
 
 		public :
@@ -60,12 +60,14 @@ namespace ft
 			//contructors by default
 			explicit vector (const Alloc& alloc = Alloc()): _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
+				// std::cout << "constructor by default 0" <<std::endl;
+				// _array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 			};
 
 			//contructors fill one (remplir)
-			explicit vector (size_t n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
+			explicit vector (size_type n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
 			{
+				// std::cout << "constructor by value 0" <<std::endl;
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
 				for ( _size_filled= 0; _size_filled < n; _size_filled++)
 				{
@@ -75,8 +77,9 @@ namespace ft
 
 			//Constructor fill list (remplir)
 			template <class InputIte>
-			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(last), _size_filled(0), _alloc(alloc)
+			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
+				// std::cout << "constructor by list 0" <<std::endl;
 				while (first != last)
 				{
 					this->push_back(*first);
@@ -89,7 +92,7 @@ namespace ft
 			{
 				if (*this == x)
 					return;
-				this->insert(begin(), x.begin(), x.end());
+				insert(begin(), x.begin(), x.end());
 			};
 
 			// operator =
@@ -106,23 +109,36 @@ namespace ft
 			//destructeur
 			~vector()
 			{
+			    // std::cout << "destructor 0" << std::endl;
 				this->clear();
+			    // std::cout << "destructor 1" << std::endl;
 				if (_size_alloc > 0)
 				{
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+			   		// std::cout << "destructor 2" << std::endl;
 					_size_alloc = 0;
 				}
+			    // std::cout << "destructor 3" << std::endl;
 			};
+
+			
 
 		//-------------FONCTION-------------
 
 			//print
 			void			print_vector()
 			{
-				for (int i = 0; i < _size_filled; i++)
+				for (size_type i = 0; i < _size_filled; i++)
 				{
 					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
 				}
+			};
+
+			//print
+			void			print_element()
+			{
+				std::cout << "Size alloc : " << _size_alloc << std::endl;
+				std::cout << "Size filled : " << _size_filled << std::endl;
 			};
 
 		//-------------EXCEPTIONS------------
@@ -148,7 +164,7 @@ namespace ft
 			// begin const
 			const_iterator begin() const
 			{
-				return (iterator(_array));
+				return (const_iterator(_array));
 			};
 
 			// end Renvoie un itérateur faisant référence à l'élément après la fin dans le conteneur vectoriel.
@@ -188,7 +204,7 @@ namespace ft
 			};
 		//-------------CAPACITY-------------
 			//size
-			size_t	size()
+			size_type	size()	const
 			{
 				return ( _size_filled);
 			};
@@ -196,7 +212,7 @@ namespace ft
 			//max_size
 			size_type		max_size() const
 			{
-				return std::numeric_limits<size_t>::max() / sizeof(*_array);
+				return std::numeric_limits<size_type>::max() / sizeof(*_array);
 			};
 
 			//resize
@@ -223,7 +239,7 @@ namespace ft
 				else
 				{               
 					reserve(n);
-					for( size_t _size_filled = 0; _size_filled < n;  _size_filled++)
+					for(size_type _size_filled = 0; _size_filled < n;  _size_filled++)
 						_array[_size_filled]= val;
 				}
 			};
@@ -244,21 +260,28 @@ namespace ft
 			//n => la taille demandé du futur array
 			void			reserve (size_type n)
 			{
+				// std::cout << "reserve 0" <<std::endl;
 				if (n > max_size())
 					throw vector::length_error();
 				if (_size_alloc < n)
 				{
 					//realoue plus grand
-					T			tmp[_size_alloc + n];
+					T			tmp[_size_alloc + n + 1];
 					size_type	tmp_size;
-					for (int i = 0; i < _size_filled ; i++)
+					// std::cout << "reserve 1" <<std::endl;
+					for (size_type i = 0; i < _size_filled ; i++)
 						tmp[i] = _array[i];
+					// std::cout << "reserve 2" <<std::endl;
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+					// std::cout << "reserve 3" <<std::endl;
 					tmp_size = _size_alloc;
+					// std::cout << "reserve 4" <<std::endl;
 					_size_alloc = tmp_size + n;
+					// std::cout << "reserve 5" <<std::endl;
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
-					for (size_t i = 0; i < tmp_size; i++)
+					for (size_type i = 0; i < tmp_size; i++)
 						_array[i] = tmp[i];
+					// std::cout << "reserve 6" <<std::endl;
 				}
 			};
 
@@ -324,53 +347,56 @@ namespace ft
 
 		// assign Affecte un nouveau contenu au vecteur, en remplaçant son contenu actuel et en modifiant sa taille en conséquence.
 		// assign (1) les nouveaux contenus sont des éléments construits à partir de chacun des éléments de la gamme entre premier et dernier, dans le même ordre
-		template <class InputIterator>
-  			void assign (InputIterator first, InputIterator last)
+		// template <class InputIterator>
+  			void assign (iterator first, iterator last)
 			{
-				T tmp[_size_filled];
-					for (size_type i = 0; i < _size_filled; i++)
-						tmp[i] = _array[i];
-				size_t n = 0;
-				for (iterator i = first; i != last; i++)
-						n++;
-				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n)); // comment on connait la taille ? 
-				iterator i; // doit dire que c un iterator pour le mettre a first 
-				for (i = first; i != last; i++)
-					_array[i] = i;
+				iterator start = first;
+				iterator end = last;
+				size_t save = _size_filled;
+				while (start != end)
+					push_back(*start++);
+				for (size_t i = 0; i < save; i++)
+					erase(begin());
 			};
 		// assign (2) le nouveau contenu est constitué de n éléments, chacun initialisé à une copie de val.
 			void assign (size_type n, const value_type& val)
 			{
-				T tmp[_size_filled];
-					for (size_type i = 0; i < _size_filled; i++)
-						tmp[i] = _array[i];
+				if (_size_alloc != 0)
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n)); 
-					for (size_type i = 0; i < n; i++)
-						_array[i] = val;
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n)); 
+				_size_alloc = n;
+				for (size_type i = 0; i < n; i++)
+					_array[i] = val;
+				_size_filled = n;
 			};
 		
 		//push_back Ajoute un nouvel élément à la fin du vecteur, après son dernier élément actuel. Le contenu de val est copié (ou déplacé) vers le nouvel élément.
 			void push_back (const value_type& val)
 			{
-				if (_size_alloc + 1 >= _size_filled) //Cela augmente effectivement la taille du conteneur de un, ce qui provoque une réallocation automatique de l'espace de stockage alloué si - et seulement si - la nouvelle taille de vecteur dépasse la capacité de vecteur actuelle.
+				// std::cout << "push back 0" <<std::endl;
+				// print_element();
+				if (_size_alloc == 0)
+				{
+					_size_alloc++;
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc + 1));
+				}
+				else if (_size_alloc + 1 >= _size_filled) //Cela augmente effectivement la taille du conteneur de un, ce qui provoque une réallocation automatique de l'espace de stockage alloué si - et seulement si - la nouvelle taille de vecteur dépasse la capacité de vecteur actuelle.
 					reserve(_size_filled + 1);
-				_array[_size_filled + 1] = val;
+				// print_element();
+				// std::cout << "push back 1" <<std::endl;
+				_array[_size_filled] = val;
+				// std::cout << "push back 2" <<std::endl;
 				_size_filled++;
+				// print_element();
+				// print_vector();
+				// std::cout << "push back 3" <<std::endl;
 			};
 
 		//pop_back Supprime le dernier élément du vecteur, réduisant ainsi la taille du conteneur d'une unité
 			void pop_back()
 			{
-				T tmp[_size_filled];
-				for (size_type i = 0; i < _size_filled; i++)
-					tmp[i] = _array[i];
-				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				//std::cout << "pop back 0" <<std::endl;
 				_size_filled--;
-				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_filled));
-				for (size_type i = 0; i < _size_filled; i++)
-					_array[i] = tmp[i];
 			};
 		
 		// insert insertion de new element dans le vecteur 
@@ -401,13 +427,13 @@ namespace ft
 				reserve(n);
 				if (it == end())
 				{
-					for (size_t i = 0; i != n; i++)
+					for (size_type i = 0; i != n; i++)
 						push_back(val);
 				}
 				T tmp[n];
 				for (iterator i = begin(); i != position; i++)
 						tmp[i] = _array[i];
-				for (size_t y = 0; y != n; y++)
+				for (size_type y = 0; y != n; y++)
 						tmp[y++] = val;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
@@ -417,7 +443,7 @@ namespace ft
    			void insert (iterator position, InputIterator first, InputIterator last)
 			{
 				iterator it = position;
-				size_t count = 0;
+				size_type count = 0;
 				for (iterator i = first; i != last; i++)
 					count++;
 				reserve(count + _size_filled);
@@ -438,9 +464,10 @@ namespace ft
 		// swap 
 			void swap (vector& x)
 			{
-				T *tmp_array = x._array;
-				size_t tmp_size_filled = x._size_filled;
-				size_t tmp_size_alloc = x._size_alloc;
+			    // std::cout << "swap 0" << std::endl;
+				T		*tmp_array = x._array;
+				size_type	tmp_size_filled = x._size_filled;
+				size_type	tmp_size_alloc = x._size_alloc;
 				x._array = _array;
 				x._size_filled = _size_filled;
 				x._size_alloc = _size_alloc;
@@ -461,20 +488,23 @@ namespace ft
 			iterator erase (iterator position)
 			{
 				T		tmp[_size_filled - 1];
-				iterator	it = begin();
+				iterator save = begin();
 				int			j;
 				j = 0;
-				for (it = 0; it < end(); it++)
+				for (iterator it = begin(); it < end(); it++)
 				{
 					if (it != position)
-						tmp[j] = it;
-					j++;
+					{
+						tmp[j] = *it;
+						j++;
+					}
 				}
 				_size_filled--;
 				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
-				for (size_t i = 0; i < _size_filled; i++)
+				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
+				return (save);
 			};
 
 			//erase an range de first(inclu) a last(non inclu) 
@@ -482,6 +512,7 @@ namespace ft
 			{
 				T		tmp[_size_filled - 1];
 				iterator	it = begin();
+				iterator	save = begin();
 				int			j;
 				j = 0;
 				for (it = 0; it < end(); it++)
@@ -500,20 +531,26 @@ namespace ft
 				}
 				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
-				for (size_t i = 0; i < _size_filled; i++)
+				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
+				return (save);
 			};
 
 			//clear suprimme tous les elements du tab
 			void clear()
 			{
-				while(_size_filled >= 0)
+				// std::cout << "clear 0" <<std::endl;
+				while(_size_filled > 0)
 				{
+					// print_element();
 					pop_back();
-					_size_filled--;
 				}
-				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				// std::cout << "clear 2" <<std::endl;
+				if (_size_alloc > 0)
+					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				// std::cout << "clear 3" <<std::endl;
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
+				// std::cout << "clear 4" <<std::endl;
 			};
 			
 	};
@@ -595,6 +632,21 @@ namespace ft
 			{
 				return(x.swap(y));
 			};
+
+
+		template < class T >		
+		std::ostream& operator <<(std::ostream& s, ft::vector<T>& v) 
+			{
+				if (v.empty() == true)
+					return (s);
+				s << "{";
+				for (typename vector<T>::iterator it = v.begin(); it + 1 != v.end(); ++it)
+				{
+					s << *it << ", ";
+				}
+				s << v[v.size() - 1] << "}";
+				return s;
+			}
 }
 
 #endif

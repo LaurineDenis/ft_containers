@@ -1,6 +1,6 @@
 NAME = ft_containers
 SRCS = main.cpp
-HEADER = vector.hpp stack.hpp iterator.hpp
+HEADER = vector.hpp stack.hpp iterator.hpp utils.hpp
 OBJ = ${SRCS:.cpp=.o}
 
 RM          = rm -rf
