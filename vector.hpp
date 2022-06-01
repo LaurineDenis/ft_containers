@@ -26,14 +26,23 @@ namespace ft
 			typedef typename	Alloc::const_reference			const_reference;
 			typedef typename	Alloc::pointer					pointer;
 			typedef typename	Alloc::const_pointer			const_pointer;
-			typedef				Iterator<T>						iterator;
-			typedef				ConstIterator<T>				const_iterator;
-			typedef				ReverseIterator<iterator>		reverse_iterator;
-			typedef				ConstReverseIterator<iterator>	const_reverse_iterator;
+			typedef				iterator<T>						iterator;
+			typedef				const_iterator<T>				const_iterator;
+			typedef				reverse_iterator<iterator>		reverse_iterator;
+			typedef				const_reverse_iterator<iterator>	const_reverse_iterator;
 			class				OutOfRange : public std::exception
-			{ virtual const char *what() const throw(); };
+			{ 
+				virtual const char *what() const throw()
+				{
+					return "ft::Vector error : Out of range!\n";
+				}
+			};
 			class				length_error : public std::exception
-			{ virtual const char *what() const throw(); };
+			{ virtual const char *what() const throw()
+				{
+					return "ft::Vector error : Length error!\n";
+				}
+			};
 
 		private :
 
@@ -66,7 +75,7 @@ namespace ft
 
 			//Constructor fill list (remplir)
 			template <class InputIte>
-			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
+			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(last), _size_filled(0), _alloc(alloc)
 			{
 				while (first != last)
 				{
@@ -76,7 +85,7 @@ namespace ft
 			};
 
 			//Constructor by copy
-			vector (const vector& x) : _alloc(v._alloc)
+			vector (const vector& x) : _alloc(x._alloc)
 			{
 				if (*this == x)
 					return;
@@ -118,15 +127,15 @@ namespace ft
 
 		//-------------EXCEPTIONS------------
 
-			const char		*Vector<T, Alloc>::OutOfRange::what() const throw()
-			{
-				return "ft::Vector error : Out of range!\n";
-			}
+			// const char		*vector<T, Alloc>::OutOfRange::what() const throw()
+			// {
+			// 	return "ft::Vector error : Out of range!\n";
+			// }
 
-			const char		*Vector<T, Alloc>::length_error::what() const throw()
-			{
-				return "ft::Vector error : Length error!\n";
-			}
+			// const char		*vector<T, Alloc>::length_error::what() const throw()
+			// {
+			// 	return "ft::Vector error : Length error!\n";
+			// }
 
 		//-------------ITERATORS-------------
 
@@ -157,7 +166,7 @@ namespace ft
 			// rbegin pointe vers l'élément juste avant celui qui serait pointé par member end.
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(_array[_size_filled - 1]))
+				return (reverse_iterator(_array[_size_filled - 1]));
 			};
 
 			// rbegin const
@@ -195,8 +204,11 @@ namespace ft
 			{
 				if (n <= _size_filled)
 				{
-					for(n; n < _size_filled; n++)
+					while (n < _size_filled)
+					{
 						pop_back();
+						n++;
+					}
 				}
 				else if (_size_alloc > n)
 				{
@@ -233,7 +245,7 @@ namespace ft
 			void			reserve (size_type n)
 			{
 				if (n > max_size())
-					throw Vector::length_error();
+					throw vector::length_error();
 				if (_size_alloc < n)
 				{
 					//realoue plus grand
@@ -241,7 +253,7 @@ namespace ft
 					size_type	tmp_size;
 					for (int i = 0; i < _size_filled ; i++)
 						tmp[i] = _array[i];
-					_array.deallocate(_array, sizeof(T *) * _size_alloc);
+					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 					tmp_size = _size_alloc;
 					_size_alloc = tmp_size + n;
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
@@ -255,7 +267,7 @@ namespace ft
 			reference operator[] (size_type n)
 			{
 				if (n > _size_filled || n < 0)
-					throw Vector::OutOfRange(); // out of range  
+					throw vector::OutOfRange(); // out of range  
 			// ON NE DOIT PAS FAIRE LES VERIFICATION --> CHELOU
 				return (_array[n]);
 			};
@@ -264,7 +276,7 @@ namespace ft
 			const_reference operator[] (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw Vector::OutOfRange(); // out of range 
+					throw vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -272,7 +284,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw Vector::OutOfRange(); // out of range 
+					throw vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -280,7 +292,7 @@ namespace ft
 			const_reference at (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw Vector::OutOfRange(); // out of range 
+					throw vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -318,11 +330,14 @@ namespace ft
 				T tmp[_size_filled];
 					for (size_type i = 0; i < _size_filled; i++)
 						tmp[i] = _array[i];
-					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
-					iterator i; // doit dire que c un iterator pour le mettre a first 
-					for (i = first; i != last; i++)
-						_array[i] = i;
+				size_t n = 0;
+				for (iterator i = first; i != last; i++)
+						n++;
+				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n)); // comment on connait la taille ? 
+				iterator i; // doit dire que c un iterator pour le mettre a first 
+				for (i = first; i != last; i++)
+					_array[i] = i;
 			};
 		// assign (2) le nouveau contenu est constitué de n éléments, chacun initialisé à une copie de val.
 			void assign (size_type n, const value_type& val)
@@ -331,7 +346,7 @@ namespace ft
 					for (size_type i = 0; i < _size_filled; i++)
 						tmp[i] = _array[i];
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n)); 
 					for (size_type i = 0; i < n; i++)
 						_array[i] = val;
 			};
@@ -371,7 +386,7 @@ namespace ft
 				T tmp[_size_filled + 1];
 				for (iterator i = begin(); i != position; i++)
 						tmp[i] = _array[i];
-				tmp[i] = val;
+				tmp[position] = val;
 				for (iterator i = position; i != end(); i++)
 						tmp[i] = _array[i];
 				_size_filled++;
@@ -393,7 +408,7 @@ namespace ft
 				for (iterator i = begin(); i != position; i++)
 						tmp[i] = _array[i];
 				for (size_t y = 0; y != n; y++)
-						tmp[i++] = val;
+						tmp[y++] = val;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
 			};
@@ -402,8 +417,9 @@ namespace ft
    			void insert (iterator position, InputIterator first, InputIterator last)
 			{
 				iterator it = position;
-				for (iterator i = first; i != last; i++);
-					size_t count++;
+				size_t count = 0;
+				for (iterator i = first; i != last; i++)
+					count++;
 				reserve(count + _size_filled);
 				if (it == end())
 				{
@@ -414,7 +430,7 @@ namespace ft
 				for (iterator i = begin(); i != position; i++)
 						tmp[i] = _array[i];
 				for (iterator y = first; y != last; y++)
-						tmp[i++] = y;
+						tmp[y++] = y;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
 			};
@@ -491,9 +507,10 @@ namespace ft
 			//clear suprimme tous les elements du tab
 			void clear()
 			{
-				for (_size_filled; _size_filled >= 0; _size_filled--)
+				while(_size_filled >= 0)
 				{
 					pop_back();
+					_size_filled--;
 				}
 				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
@@ -509,11 +526,11 @@ namespace ft
 			{
 				if (lhs.size() != rhs.size())
 					return (false);
-				iterator first_lhs = lhs.begin();
-				iterator first_rhs = rhs.begin();
+				typename ft::vector<T>::const_iterator first_lhs = lhs.begin();
+				typename ft::vector<T>::const_iterator first_rhs = rhs.begin();
 				while (first_lhs != lhs.end() && first_rhs != rhs.end())
 				{
-					if (&& first_lhs != first_rhs)
+					if (first_lhs != first_rhs)
 						return (false);
 					first_lhs++;
 					first_rhs++;
@@ -533,8 +550,8 @@ namespace ft
 			{
 				if (lhs == rhs)
 					return (false);
-				iterator first_lhs = lhs.begin();
-				iterator first_rhs = rhs.begin();
+				typename ft::vector<T>::const_iterator first_lhs = lhs.begin(); // on doit faire un template d'iterator
+				typename ft::vector<T>::const_iterator  first_rhs = rhs.begin();
 				while (first_lhs != lhs.end() && first_rhs != rhs.end())
 				{
 					first_lhs++;

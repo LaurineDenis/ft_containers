@@ -92,22 +92,22 @@ namespace ft
         
         //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
             // a + n ON DIT QUE N EST UN DIFFERENT TYPE DONC JE PEUX PAS METTRE INT JE PENSE
-            iterator operator +(difference_type n) // on fait une copie car on ne l'assigne pas comme avec a += n 
+            iterator operator+(int n) // on fait une copie car on ne l'assigne pas comme avec a += n 
             {
-                iterator tmp;
+                iterator tmp; //JE METS UN INT SINON J'AI DEUX FOIS LA MEME DECLA 129
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr++;
                 return (tmp);
             };
             // n + a ? 
 
             // a - n
-            iterator operator -(difference_type n)
+            iterator operator -(int n)
             {
                 iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr--;
                 return (tmp);
             };
@@ -213,8 +213,7 @@ namespace ft
             typedef typename    std::ptrdiff_t  difference_type; 
 
         private :
-
-            pointer _ptr;
+            const_pointer _ptr;
 
         public :
 
@@ -224,10 +223,10 @@ namespace ft
             const_iterator(void){};
 
             //contructors fill one
-            const_iterator(pointer ptr): _ptr(ptr){};
+            const_iterator(const_pointer ptr): _ptr(ptr){};
 
             //Constructor by copy
-            const_iterator(const iterator &src)
+            const_iterator(const const_iterator &src)
             {
                 if (*this != src)
 					*this = src;
@@ -235,7 +234,7 @@ namespace ft
             }
            
             // operator =
-			const_iterator& operator= (const iterator& src)
+			const_iterator& operator= (const const_iterator& src)
             {
                 _ptr = src._ptr;
                 return (*this);
@@ -255,7 +254,7 @@ namespace ft
             // a++ int
             const_iterator operator ++(int)
             {
-                iterator index; 
+                const_iterator index; 
                 index = *this;
                 ++_ptr; 
                 return (index); 
@@ -271,7 +270,7 @@ namespace ft
             // a-- int
             const_iterator operator --(int)
             {
-                iterator index;
+                const_iterator index;
                 index = *this;
                 --_ptr;
                 return (index);
@@ -279,34 +278,34 @@ namespace ft
         
         //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
             // a + n 
-            const_iterator operator +(difference_type n)
+            const_iterator operator +(int n)
             {
-                iterator tmp;
+                const_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr++;
                 return (tmp);
             };
             // n + a ? 
 
             // a - n
-            const_iterator operator -(difference_type n)
+            const_iterator operator -(int n)
             {
-                iterator tmp;
+                const_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr--;
                 return (tmp);
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(iterator b)
+            difference_type operator +(const_iterator b)
             {
                 return (_ptr + b._ptr);
             };
 
             // a - b
-            difference_type operator -(iterator b)
+            difference_type operator -(const_iterator b)
             {
                 return (_ptr - b._ptr);
             };
@@ -329,37 +328,37 @@ namespace ft
 
          //-------------BOOLEANS -----------
             //==
-            bool operator== (const iterator& b) 
+            bool operator== (const const_iterator& b) 
             {
                 return (_ptr == b._ptr);
             };
 
             //!=
-            bool operator!= (const iterator& b) 
+            bool operator!= (const const_iterator& b) 
             {
                 return (_ptr != b._ptr);
             };
 
             // <
-            bool operator< (const iterator& b) 
+            bool operator< (const const_iterator& b) 
             {
                 return (_ptr < b._ptr);
             };
 
             // <=
-            bool operator<= (const iterator& b) 
+            bool operator<= (const const_iterator& b) 
             {
                 return (_ptr <= b._ptr);
             };
 
             // >
-            bool operator> (const iterator& b) 
+            bool operator> (const const_iterator& b) 
             {
                 return (_ptr > b._ptr);
             };
 
             // >=
-            bool operator>= (const iterator& b) 
+            bool operator>= (const const_iterator& b) 
             {
                 return (_ptr >= b._ptr);
             };
@@ -368,7 +367,7 @@ namespace ft
             // a[n]
             const_reference operator[](difference_type n)
             {
-                iterator tmp = *this;
+                const_iterator tmp = *this;
                 if (n < 0)
                     tmp -= n;
                 else
@@ -402,7 +401,7 @@ namespace ft
 
         private :
 
-            pointer _ptr;
+            reverse_pointer _ptr;
 
         public :
 
@@ -412,22 +411,22 @@ namespace ft
             reverse_iterator(void){};
 
             //contructors fill one
-            reverse_iterator(pointer ptr): _ptr(ptr){};
+            reverse_iterator(reverse_pointer ptr): _ptr(ptr){};
 
             //reverseructor by copy
-            reverse_iterator(reverse iterator &src)
+            reverse_iterator(const reverse_iterator &src)
             {
                 if (*this != src)
 					*this = src;
                 return (*this);
-            }
+            };
            
             // operator =
-			reverse_iterator& operator= (reverse iterator& src)
+			reverse_iterator& operator= (const reverse_iterator& src)
             {
                 _ptr = src._ptr;
                 return (*this);
-            }
+            };
 
             //destructeur
             ~reverse_iterator(){}; // virtual ou pas ?
@@ -443,7 +442,7 @@ namespace ft
             // a++ int
             reverse_iterator operator ++(int)
             {
-                iterator index; 
+                reverse_iterator index; 
                 index = *this;
                 --_ptr; 
                 return (index); 
@@ -459,7 +458,7 @@ namespace ft
             // a-- int
             reverse_iterator operator --(int)
             {
-                iterator index;
+                reverse_iterator index;
                 index = *this;
                 ++_ptr;
                 return (index);
@@ -467,34 +466,34 @@ namespace ft
         
         //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
             // a + n 
-            reverse_iterator operator +(difference_type n)
+            reverse_iterator operator +(int n)
             {
-                iterator tmp;
+                reverse_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr--;
                 return (tmp);
             };
             // n + a ? 
 
             // a - n
-            reverse_iterator operator -(difference_type n)
+            reverse_iterator operator -(int n)
             {
-                iterator tmp;
+                reverse_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr++;
                 return (tmp);
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(iterator b)
+            difference_type operator +(reverse_iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
             // a - b
-            difference_type operator -(iterator b)
+            difference_type operator -(reverse_iterator b)
             {
                 return (_ptr + b._ptr);
             };
@@ -517,37 +516,37 @@ namespace ft
 
          //-------------BOOLEANS -----------
             //==
-            bool operator== (const iterator& b) 
+            bool operator== (const reverse_iterator& b) 
             {
                 return (_ptr == b._ptr);
             };
 
             //!=
-            bool operator!= (const iterator& b) 
+            bool operator!= (const reverse_iterator& b) 
             {
                 return (_ptr != b._ptr);
             };
 
             // <
-            bool operator< (const iterator& b) 
+            bool operator< (const reverse_iterator& b) 
             {
                 return (_ptr < b._ptr);
             };
 
             // <=
-            bool operator<= (const iterator& b) 
+            bool operator<= (const reverse_iterator& b) 
             {
                 return (_ptr <= b._ptr);
             };
 
             // >
-            bool operator> (const iterator& b) 
+            bool operator> (const reverse_iterator& b) 
             {
                 return (_ptr > b._ptr);
             };
 
             // >=
-            bool operator>= (const iterator& b) 
+            bool operator>= (const reverse_iterator& b) 
             {
                 return (_ptr >= b._ptr);
             };
@@ -556,7 +555,7 @@ namespace ft
             // a[n]
             reverse_reference operator[](difference_type n)
             {
-                iterator tmp = *this;
+                reverse_iterator tmp = *this;
                 if (n < 0)
                     tmp -= n;
                 else
@@ -590,7 +589,7 @@ namespace ft
 
         private :
 
-            pointer _ptr;
+            const_reverse_pointer _ptr;
 
         public :
 
@@ -600,22 +599,22 @@ namespace ft
             const_reverse_iterator(void){};
 
             //contructors fill one
-            const_reverse_iterator(pointer ptr): _ptr(ptr){};
+            const_reverse_iterator(const_reverse_pointer ptr): _ptr(ptr){};
 
             //const_reverseructor by copy
-            const_reverse_iterator(const_reverse iterator &src)
+            const_reverse_iterator(const const_reverse_iterator &src)
             {
                 if (*this != src)
 					*this = src;
                 return (*this);
-            }
+            };
            
             // operator =
-			const_reverse_iterator& operator= (const_reverse iterator& src)
+			const_reverse_iterator& operator= (const const_reverse_iterator& src)
             {
                 _ptr = src._ptr;
                 return (*this);
-            }
+            };
 
             //destructeur
             ~const_reverse_iterator(){}; // virtual ou pas ?
@@ -626,12 +625,12 @@ namespace ft
             {
                 _ptr--;
                 return (*this);
-            }
+            };
 
             // a++ int
             const_reverse_iterator operator ++(int)
             {
-                iterator index; 
+                const_reverse_iterator index; 
                 index = *this;
                 --_ptr; 
                 return (index); 
@@ -647,7 +646,7 @@ namespace ft
             // a-- int
             const_reverse_iterator operator --(int)
             {
-                iterator index;
+                const_reverse_iterator index;
                 index = *this;
                 ++_ptr;
                 return (index);
@@ -655,34 +654,34 @@ namespace ft
         
         //-------------SUPPORT ARITHETIC OPERATOR + AND - -----------
             // a + n 
-            const_reverse_iterator operator +(difference_type n)
+            const_reverse_iterator operator +(int n)
             {
-                iterator tmp;
+                const_reverse_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr--;
                 return (tmp);
             };
             // n + a ? 
 
             // a - n
-            const_reverse_iterator operator -(difference_type n)
+            const_reverse_iterator operator -(int n)
             {
-                iterator tmp;
+                const_reverse_iterator tmp;
                 tmp = *this;
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     tmp._ptr++;
                 return (tmp);
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(iterator b)
+            difference_type operator +(const_reverse_iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
             // a - b
-            difference_type operator -(iterator b)
+            difference_type operator -(const_reverse_iterator b)
             {
                 return (_ptr + b._ptr);
             };
@@ -705,37 +704,37 @@ namespace ft
 
          //-------------BOOLEANS -----------
             //==
-            bool operator== (const iterator& b) 
+            bool operator== (const const_reverse_iterator& b) 
             {
                 return (_ptr == b._ptr);
             };
 
             //!=
-            bool operator!= (const iterator& b) 
+            bool operator!= (const const_reverse_iterator& b) 
             {
                 return (_ptr != b._ptr);
             };
 
             // <
-            bool operator< (const iterator& b) 
+            bool operator< (const const_reverse_iterator& b) 
             {
                 return (_ptr < b._ptr);
             };
 
             // <=
-            bool operator<= (const iterator& b) 
+            bool operator<= (const const_reverse_iterator& b) 
             {
                 return (_ptr <= b._ptr);
             };
 
             // >
-            bool operator> (const iterator& b) 
+            bool operator> (const const_reverse_iterator& b) 
             {
                 return (_ptr > b._ptr);
             };
 
             // >=
-            bool operator>= (const iterator& b) 
+            bool operator>= (const const_reverse_iterator& b) 
             {
                 return (_ptr >= b._ptr);
             };
@@ -744,7 +743,7 @@ namespace ft
             // a[n]
             const_reverse_reference operator[](difference_type n)
             {
-                iterator tmp = *this;
+                const_reverse_iterator tmp = *this;
                 if (n < 0)
                     tmp -= n;
                 else
