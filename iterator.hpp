@@ -9,8 +9,8 @@ namespace ft
         public :
             typedef             T				value_type;
             typedef             value_type      &reference;
-            typedef             value_type*     *pointer;
-            typedef typename    std::ptrdiff_t  difference_type; // on met ptrdiff_t carr dans iterator_trait c'est comme ca qu'on le définit
+            typedef             value_type      *pointer;
+            //typedef typename    std::ptrdiff_t  int; // on met ptrdiff_t carr dans iterator_trait c'est comme ca qu'on le définit
         // ptrdiff_t C'est un type capable de représenter le résultat de toute opération de soustraction de pointeur valide.
 
 
@@ -28,7 +28,7 @@ namespace ft
         // Où X est un type d'itérateur,
         // a et b sont des objets de ce type d'itérateur,
         // t est un objet du type pointé par le type d'itérateur 
-        // n est un different type
+        // n est un int
 		//-------------CONSTRUCTORS-------------
             
             //contructors by default
@@ -42,7 +42,6 @@ namespace ft
             {
                 if (*this != src)
 					*this = src;
-                return (*this);
             }
            
             // operator =
@@ -113,29 +112,29 @@ namespace ft
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(iterator b)
+            int operator +(iterator b)
             {
                 return (_ptr + b._ptr);
             };
 
             // a - b
-            difference_type operator -(iterator b)
+            int operator -(iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
         //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
             // a += n on fait pas de copie car on l'assigne directement à a
-            iterator operator +(difference_type n)
+            iterator operator +=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr++;
                 return (*this);
             };
             // a -= n
-             iterator operator -(difference_type n)
+             iterator operator -=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr--;
                 return (*this);
             };
@@ -179,7 +178,7 @@ namespace ft
 
         //-------------REFERENCE & POINTEUR -----------
             // a[n]
-            reference operator[](difference_type n)
+            reference operator[](int n)
             {
                 iterator tmp = *this;
                 if (n < 0)
@@ -209,8 +208,8 @@ namespace ft
         public :
             typedef             T				value_type;
             typedef             value_type      &const_reference;
-            typedef             value_type*     *const_pointer;
-            typedef typename    std::ptrdiff_t  difference_type; 
+            typedef             value_type      *const_pointer;
+            //typedef typename    std::ptrdiff_t  int; 
 
         private :
             const_pointer _ptr;
@@ -230,7 +229,6 @@ namespace ft
             {
                 if (*this != src)
 					*this = src;
-                return (*this);
             }
            
             // operator =
@@ -299,29 +297,29 @@ namespace ft
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(const_iterator b)
+            int operator +(const_iterator b)
             {
                 return (_ptr + b._ptr);
             };
 
             // a - b
-            difference_type operator -(const_iterator b)
+            int operator -(const_iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
         //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
             // a += n
-            const_iterator operator +(difference_type n)
+            const_iterator operator +=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr++;
                 return (*this);
             };
             // a -= n
-            const_iterator operator -(difference_type n)
+            const_iterator operator -=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr--;
                 return (*this);
             };
@@ -365,7 +363,7 @@ namespace ft
 
         //-------------REFERENCE & POINTEUR -----------
             // a[n]
-            const_reference operator[](difference_type n)
+            const_reference operator[](int n)
             {
                 const_iterator tmp = *this;
                 if (n < 0)
@@ -396,8 +394,8 @@ namespace ft
         public :
             typedef             T				value_type;
             typedef             value_type      &reverse_reference;
-            typedef             value_type*     *reverse_pointer;
-            typedef typename    std::ptrdiff_t  difference_type; 
+            typedef             value_type      *reverse_pointer;
+            //typedef typename    std::ptrdiff_t  int; 
 
         private :
 
@@ -418,7 +416,6 @@ namespace ft
             {
                 if (*this != src)
 					*this = src;
-                return (*this);
             };
            
             // operator =
@@ -487,29 +484,29 @@ namespace ft
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(reverse_iterator b)
+            int operator +(reverse_iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
             // a - b
-            difference_type operator -(reverse_iterator b)
+            int operator -(reverse_iterator b)
             {
                 return (_ptr + b._ptr);
             };
 
         //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
             // a += n
-            reverse_iterator operator +(difference_type n)
+            reverse_iterator operator +=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr--;
                 return (*this);
             };
             // a -= n
-            reverse_iterator operator -(difference_type n)
+            reverse_iterator operator -=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr++;
                 return (*this);
             };
@@ -553,7 +550,7 @@ namespace ft
 
         //-------------REFERENCE & POINTEUR -----------
             // a[n]
-            reverse_reference operator[](difference_type n)
+            reverse_reference operator[](int n)
             {
                 reverse_iterator tmp = *this;
                 if (n < 0)
@@ -584,8 +581,8 @@ namespace ft
         public :
             typedef             T				value_type;
             typedef             value_type      &const_reverse_reference;
-            typedef             value_type*     *const_reverse_pointer;
-            typedef typename    std::ptrdiff_t  difference_type; 
+            typedef             value_type      *const_reverse_pointer;
+            //typedef typename    std::ptrdiff_t  int; 
 
         private :
 
@@ -606,7 +603,6 @@ namespace ft
             {
                 if (*this != src)
 					*this = src;
-                return (*this);
             };
            
             // operator =
@@ -675,29 +671,29 @@ namespace ft
             };
 
             // a + b donc deux iterator ?
-            difference_type operator +(const_reverse_iterator b)
+            int operator +(const_reverse_iterator b)
             {
                 return (_ptr - b._ptr);
             };
 
             // a - b
-            difference_type operator -(const_reverse_iterator b)
+            int operator -(const_reverse_iterator b)
             {
                 return (_ptr + b._ptr);
             };
 
         //-------------SUPPORT COMPOUNF ASSIGNMENT OPERATION += AND -= -----------
             // a += n
-            const_reverse_iterator operator +(difference_type n)
+            const_reverse_iterator operator +=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr--;
                 return (*this);
             };
             // a -= n
-            const_reverse_iterator operator -(difference_type n)
+            const_reverse_iterator operator -=(int n)
             {
-                for (difference_type i = 0; i < n; i++)
+                for (int i = 0; i < n; i++)
                     _ptr++;
                 return (*this);
             };
@@ -741,7 +737,7 @@ namespace ft
 
         //-------------REFERENCE & POINTEUR -----------
             // a[n]
-            const_reverse_reference operator[](difference_type n)
+            const_reverse_reference operator[](int n)
             {
                 const_reverse_iterator tmp = *this;
                 if (n < 0)
