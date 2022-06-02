@@ -4,39 +4,34 @@
 
 #define TESTED_TYPE int
 
+
 int		main(void)
 {
-    ft::vector<TESTED_TYPE> vct(5);
-	ft::vector<TESTED_TYPE>::iterator it = vct.begin(), ite = vct.end();
+    ft::vector<TESTED_TYPE> foo(3, 15);
+	ft::vector<TESTED_TYPE> bar(5, 42);
+	
+	ft::vector<TESTED_TYPE>::const_iterator it_foo = foo.begin();
+	ft::vector<TESTED_TYPE>::const_iterator it_bar = bar.begin();
 
-	std::cout << "len: " << (ite - it) << std::endl;
-	for (; it != ite; ++it)
-		*it = (ite - it);
+	std::cout << "BEFORE SWAP" << std::endl;
 
-	it = vct.begin();
-	ft::vector<TESTED_TYPE> vct_range(it, --(--ite));
-	for (int i = 0; it != ite; ++it)
-		*it = ++i * 5;
+	std::cout << "foo contains:" << std::endl;
+	printSize(foo);
+	std::cout << "bar contains:" << std::endl;
+	printSize(bar);
 
-	it = vct.begin();
-	ft::vector<TESTED_TYPE> vct_copy(vct);
-	for (int i = 0; it != ite; ++it)
-		*it = ++i * 7;
-	vct_copy.push_back(42);
-	vct_copy.push_back(21);
+	foo.swap(bar);
 
-	std::cout << "\t-- PART ONE --" << std::endl;
-	printSize(vct);
-	printSize(vct_range);
-	printSize(vct_copy);
+	std::cout << "AFTER SWAP" << std::endl;
 
-	vct = vct_copy;
-	vct_copy = vct_range;
-	vct_range.clear();
+	std::cout << "foo contains:" << std::endl;
+	printSize(foo);
+	std::cout << "bar contains:" << std::endl;
+	printSize(bar);
 
-	std::cout << "\t-- PART TWO --" << std::endl;
-	printSize(vct);
-	printSize(vct_range);
-	printSize(vct_copy);
+	std::cout << "Iterator validity:" << std::endl;
+	std::cout << (it_foo == bar.begin()) << std::endl;
+	std::cout << (it_bar == foo.begin()) << std::endl;
+
 	return (0);
 }
