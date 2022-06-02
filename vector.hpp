@@ -235,9 +235,15 @@ namespace ft
 			//resize
 			void resize (size_type n, value_type val = value_type())
 			{
+				// std::cout << "size_filled = " << _size_filled << std::endl;
+				// std::cout << "n = " << n << std::endl;
+				// std::cout << "_size_alloc = " << _size_alloc << std::endl;
+
+
 				if (n <= _size_filled)
 				{
-					while (n < _size_filled)
+					size_type i = _size_filled;
+					while (n < i)
 					{
 						pop_back();
 						n++;
@@ -245,19 +251,35 @@ namespace ft
 				}
 				else if (_size_alloc > n)
 				{
-					T tmp[n];
-					for (size_type i = 0; i < n; i++)
+					// alloc = 10 et n =  5 alloc trop grande
+
+					T tmp[_size_alloc];
+					size_type tmp_size = _size_alloc;
+					for (size_type i = 0; i < _size_alloc - 1; i++)
 						tmp[i] = _array[i];
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
-					for (size_type i = 0; i < n; i++)
+					_size_alloc = n + 1;
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+					for (size_type i = 0; i < tmp_size; i++)
 						_array[i] = tmp[i];
+					for (size_type i = tmp_size ; i < _size_alloc - 1; i++)
+						_array[i] = tmp[i];
+					_size_filled = n;
 				}
 				else
-				{               
-					reserve(n);
-					for(size_type _size_filled = 0; _size_filled < n;  _size_filled++)
-						_array[_size_filled]= val;
+				{   // size_alloc = 4 et n= 10
+					T tmp[_size_alloc + n]; // on fait un vecto temp avec la bonne taille
+					for (size_type i = 0; i < _size_alloc; i++)
+						tmp[i] = _array[i]; // on copie ce qu'il y avait dans array
+				//	size_type tmp_size = _size_alloc; // on copie l'alloc de base
+					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);// on desalloue
+					_size_alloc = n + 1;// on change l'alloc de base et o rajoute 1
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc)); // on alloue a la bonne taille
+					for (size_type i = 0; i < _size_filled; i++)
+						_array[i] = tmp[i]; // on remet dans array ce qu'on avait copié
+					for (size_type i = _size_filled; i < n; i++)
+						_array[i] = val; // et on lui rajoute la valeur
+					_size_filled = n; // ne pas oublié de mettre a jour filled
 				}
 			};
 
@@ -280,24 +302,20 @@ namespace ft
 				// std::cout << "reserve 0" <<std::endl;
 				if (n > max_size())
 					throw vector::length_error();
+				
 				if (_size_alloc < n)
 				{
 					//realoue plus grand
-					T			tmp[_size_alloc + n + 1];
+					T			tmp[_size_filled + n + 1];
 					size_type	tmp_size;
 					for (size_type i = 0; i < _size_filled ; i++)
 						tmp[i] = _array[i];
-					// std::cout << "reserve 2" <<std::endl;
+					tmp_size = _size_filled + n;
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					// std::cout << "reserve 3" <<std::endl;
-					tmp_size = _size_alloc;
-					// std::cout << "reserve 4" <<std::endl;
-					_size_alloc = tmp_size + n;
-					// std::cout << "reserve 5" <<std::endl;
+					_size_alloc = tmp_size + 1;
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 					for (size_type i = 0; i < tmp_size; i++)
 						_array[i] = tmp[i];
-					// std::cout << "reserve 6" <<std::endl;
 				}
 			};
 
