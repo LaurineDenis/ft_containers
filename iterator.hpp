@@ -30,7 +30,7 @@ namespace ft
         // t est un objet du type pointé par le type d'itérateur 
         // n est un int
 		//-------------CONSTRUCTORS-------------
-            
+            static const bool input_iterator = true;
             //contructors by default
             iterator(void){};
 
@@ -217,6 +217,7 @@ namespace ft
         public :
 
 		//-------------CONSTRUCTORS-------------
+            static const bool input_iterator = true;
             
             //contructors by default
             const_iterator(void){};
@@ -404,6 +405,7 @@ namespace ft
         public :
 
 		//-------------CONSTRUCTORS-------------
+            static const bool input_iterator = true;
             
             //contructors by default
             reverse_iterator(void){};

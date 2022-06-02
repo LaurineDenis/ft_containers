@@ -8,6 +8,7 @@
 # include <sstream>
 # include <iostream>
 # include "iterator.hpp"
+# include "utils.hpp"
 
 
 namespace ft
@@ -73,11 +74,13 @@ namespace ft
 				{
 					_array[_size_filled] = val;
 				}
-			};
 
+
+			};
 			//Constructor fill list (remplir)
 			template <class InputIte>
-			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc()) : _size_alloc(0), _size_filled(0), _alloc(alloc)
+			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc(),
+			typename ft::enable_if<InputIte::input_iterator, InputIte>::type = NULL) : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
 				// std::cout << "constructor by list 0" <<std::endl;
 				while (first != last)
@@ -86,39 +89,48 @@ namespace ft
 					first++;
 				}
 			};
-
 			//Constructor by copy
-			vector (const vector& x) : _alloc(x._alloc)
+			//_alloc(allocator_type())
+			vector (const vector& x) :_size_alloc(0), _size_filled(0), _alloc(x._alloc)
 			{
+				//*this = x;
+				 //std::cout << "constructor COPY 0" <<std::endl;
+
 				if (*this == x)
 					return;
-				insert(begin(), x.begin(), x.end());
+				insert(begin(), x.begin(), x.end()); 
+				//POURQUOI FAIRE CA ?
+
 			};
 
 			// operator =
 			vector& operator= (const vector& x)
 			{
+
+			//    std::cout << "operator = 0" << std::endl;
 				if (*this == x)
 					return *this;
 				_array = x._array;
 				_size_alloc = x._size_alloc;
 				_size_filled = x._size_filled;
-				return *this;
+		//		print_vector();
+				return (*this);
 			};
 
 			//destructeur
 			~vector()
 			{
-			    // std::cout << "destructor 0" << std::endl;
+			//    std::cout << "destructor 0" << std::endl;
 				this->clear();
-			    // std::cout << "destructor 1" << std::endl;
+			//    std::cout << "destructor 1" << std::endl;
+			//	print_element();
 				if (_size_alloc > 0)
 				{
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 			   		// std::cout << "destructor 2" << std::endl;
 					_size_alloc = 0;
 				}
-			    // std::cout << "destructor 3" << std::endl;
+			   //  std::cout << "destructor 3" << std::endl;
 			};
 
 			
@@ -158,6 +170,9 @@ namespace ft
 			// begin Renvoie un itérateur pointant vers le premier élément du vecteur.
 			iterator begin()
 			{
+				// print_element();
+				// std::cout << "begin = " << _array[12] << std::endl;
+
 				return (iterator(_array));
 			};
 
@@ -182,30 +197,32 @@ namespace ft
 			// rbegin pointe vers l'élément juste avant celui qui serait pointé par member end.
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(_array[_size_filled - 1]));
+				return (reverse_iterator(--(this->end())));
 			};
 
 			// rbegin const
 			const_reverse_iterator rbegin() const
 			{
-				return (const_reverse_iterator(_array[_size_filled - 1]));
+				return (rbegin());
 			};
 
 
 			// rend Renvoie un itérateur inverse pointant vers l'élément théorique précédant le premier élément du vecteur
 			reverse_iterator rend()
 			{
-				return (reverse_iterator(_array[0 - 1]));
+				return (reverse_iterator(--(this->begin())));
 			};
 			// rend const
 			const_reverse_iterator rend() const
 			{
-				return (const_reverse_iterator(_array[0 - 1]));
+				return (rend());
 			};
 		//-------------CAPACITY-------------
 			//size
 			size_type	size()	const
 			{
+				
+
 				return ( _size_filled);
 			};
 			
@@ -268,7 +285,6 @@ namespace ft
 					//realoue plus grand
 					T			tmp[_size_alloc + n + 1];
 					size_type	tmp_size;
-					// std::cout << "reserve 1" <<std::endl;
 					for (size_type i = 0; i < _size_filled ; i++)
 						tmp[i] = _array[i];
 					// std::cout << "reserve 2" <<std::endl;
@@ -307,7 +323,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range 
+					throw vector::OutOfRange(); // out of range
 				return (_array[n]);
 			};
 
@@ -328,6 +344,7 @@ namespace ft
 			// front const 
 			const_reference front() const
 			{
+
 				return (_array[0]);
 			};
 		
@@ -347,8 +364,9 @@ namespace ft
 
 		// assign Affecte un nouveau contenu au vecteur, en remplaçant son contenu actuel et en modifiant sa taille en conséquence.
 		// assign (1) les nouveaux contenus sont des éléments construits à partir de chacun des éléments de la gamme entre premier et dernier, dans le même ordre
-		// template <class InputIterator>
-  			void assign (iterator first, iterator last)
+		template <class InputIterator>
+  			void assign (InputIterator first, InputIterator last, 
+			typename ft::enable_if<InputIterator::input_iterator, InputIterator>::type = NULL)
 			{
 				iterator start = first;
 				iterator end = last;
@@ -440,25 +458,55 @@ namespace ft
 			};
 	
 		template <class InputIterator>
-   			void insert (iterator position, InputIterator first, InputIterator last)
+   			void insert (iterator position, InputIterator first, InputIterator last,
+			typename ft::enable_if<InputIterator::input_iterator, InputIterator>::type = NULL)
 			{
+
+				size_type	count = 0;
 				iterator it = position;
-				size_type count = 0;
-				for (iterator i = first; i != last; i++)
-					count++;
-				reserve(count + _size_filled);
-				if (it == end())
+
+				while (first != last)
 				{
-					for (iterator i = first; i != last; i++)
-						_array[i] = i;// je ne sais pas si on peut ecrire comme ca ou s'il faut mettre *i
+					first++;
+					count++;
 				}
-				T tmp[count + _size_filled];
-				for (iterator i = begin(); i != position; i++)
-						tmp[i] = _array[i];
-				for (iterator y = first; y != last; y++)
-						tmp[y++] = y;
-				for (size_type i = 0; i < _size_filled; i++)
-					_array[i] = tmp[i];
+				first -= count;
+
+				// cas 1 : vecteur vide mais deja alloue et bonne taille donc juste a remplir 
+				if (_size_filled == count)
+				{
+
+					while (first != last)
+					{
+						push_back(*first);
+						first++;
+						_size_filled--; // obligé car on realloue 
+					}
+				}
+				// // cas 2 : vecteur plein mais on doit rajouter que a la fin : donc realloc plus push
+				else if (position == end())
+				{
+					
+					while (first != last)
+					{
+						push_back(*first);
+						first++;
+					}
+				}
+				// cas 3 : rajouter en plein milieux 
+				else 
+				{
+					T tmp[_size_filled + count];
+					size_type y = 0;
+					reserve(count);
+					_size_filled += count;
+					for (iterator i = begin(); i != it; i++)
+							tmp[y] = _array[y];
+					while (first != last)
+							tmp[y] = *first++;
+					for (size_type i = 0; i < _size_filled; i++)
+						_array[i] = tmp[i];
+				}
 			};
 		
 		// swap 
@@ -539,18 +587,17 @@ namespace ft
 			//clear suprimme tous les elements du tab
 			void clear()
 			{
-				// std::cout << "clear 0" <<std::endl;
+			//	print_element();
+			//	print_vector();
+
 				while(_size_filled > 0)
 				{
-					// print_element();
 					pop_back();
 				}
-				// std::cout << "clear 2" <<std::endl;
 				if (_size_alloc > 0)
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-				// std::cout << "clear 3" <<std::endl;
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
-				// std::cout << "clear 4" <<std::endl;
+				_size_alloc = 2;
 			};
 			
 	};
