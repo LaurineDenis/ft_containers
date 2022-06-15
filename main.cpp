@@ -1,50 +1,36 @@
 #include "common.hpp"
+#include "vector.hpp"
+#include <list>
 
 #define TESTED_TYPE int
 
-void	is_empty(ft::vector<TESTED_TYPE> const &vct)
+int main ()
 {
-	std::cout << "is_empty: " << vct.empty() << std::endl;
-}
+	ft::vector<TESTED_TYPE> foo(3, 15);
+	ft::vector<TESTED_TYPE> bar(5, 42);
+	
+	ft::vector<TESTED_TYPE>::const_iterator it_foo = foo.begin();
+	ft::vector<TESTED_TYPE>::const_iterator it_bar = bar.begin();
 
-int		main(void)
-{
-	const int start_size = 7;
-	ft::vector<TESTED_TYPE> vct(start_size, 20);
-	ft::vector<TESTED_TYPE> vct2;
-	ft::vector<TESTED_TYPE>::iterator it = vct.begin();
+	std::cout << "BEFORE SWAP" << std::endl;
 
-	for (int i = 2; i < start_size; ++i)
-		it[i] = (start_size - i) * 3;
-	printSize(vct, true);
+	std::cout << "foo contains:" << std::endl;
+	printSize(foo);
+	std::cout << "bar contains:" << std::endl;
+	printSize(bar);
 
-	vct.resize(10, 42);
-	printSize(vct, true);
+	foo.swap(bar);
 
-	vct.resize(18, 43);
-	printSize(vct, true);
-	vct.resize(10);
-	printSize(vct, true);
-	vct.resize(23, 44);
-	printSize(vct, true);
-	vct.resize(5);
-	printSize(vct, true);
-	vct.reserve(5);
-	vct.reserve(3);
-	printSize(vct, true);
-	vct.resize(87);
-	vct.resize(5);
-	printSize(vct, true);
+	std::cout << "AFTER SWAP" << std::endl;
 
-	is_empty(vct2);
-	vct2 = vct;
-	is_empty(vct2);
-	vct.reserve(vct.capacity() + 1);
-	printSize(vct, true);
-	printSize(vct2, true);
+	std::cout << "foo contains:" << std::endl;
+	printSize(foo);
+	std::cout << "bar contains:" << std::endl;
+	printSize(bar);
 
-	vct2.resize(0);
-	is_empty(vct2);
-	printSize(vct2, true);
+	std::cout << "Iterator validity:" << std::endl;
+	std::cout << (it_foo == bar.begin()) << std::endl;
+	std::cout << (it_bar == foo.begin()) << std::endl;
+
 	return (0);
 }
