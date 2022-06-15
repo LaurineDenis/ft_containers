@@ -4,10 +4,9 @@
 
 #define TESTED_TYPE int
 
-
-int		main(void)
+int main ()
 {
-    ft::vector<TESTED_TYPE> foo(3, 15);
+	ft::vector<TESTED_TYPE> foo(3, 15);
 	ft::vector<TESTED_TYPE> bar(5, 42);
 	
 	ft::vector<TESTED_TYPE>::const_iterator it_foo = foo.begin();

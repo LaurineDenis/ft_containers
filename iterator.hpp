@@ -47,7 +47,7 @@ namespace ft
             // operator =
 			iterator& operator= (const iterator& src)
             {
-                _ptr = src._ptr;
+                _ptr = src.operator->();
                 return (*this);
             }
 
@@ -225,19 +225,25 @@ namespace ft
             //contructors fill one
             const_iterator(const_pointer ptr): _ptr(ptr){};
 
+            //constructor by iterator
+	        const_iterator(iterator<T> const &src)
+            {
+                _ptr = src.operator->();
+            };
+
             //Constructor by copy
             const_iterator(const const_iterator &src)
             {
                 if (*this != src)
 					*this = src;
-            }
+            };
            
             // operator =
 			const_iterator& operator= (const const_iterator& src)
             {
-                _ptr = src._ptr;
+                _ptr = src.operator->();
                 return (*this);
-            }
+            };
 
             //destructeur
             ~const_iterator(){}; // virtual ou pas ?
@@ -248,7 +254,7 @@ namespace ft
             {
                 _ptr++;
                 return (*this);
-            }
+            };
 
             // a++ int
             const_iterator operator ++(int)
@@ -264,7 +270,7 @@ namespace ft
             {
                 _ptr--;
                 return (*this);
-            }
+            };
 
             // a-- int
             const_iterator operator --(int)
@@ -413,6 +419,12 @@ namespace ft
             //contructors fill one
             reverse_iterator(reverse_pointer ptr): _ptr(ptr){};
 
+            //constructor by iterator
+	        reverse_iterator(iterator<T> const &src)
+            {
+                _ptr = src.operator->();
+            };
+
             //reverseructor by copy
             reverse_iterator(const reverse_iterator &src)
             {
@@ -423,7 +435,7 @@ namespace ft
             // operator =
 			reverse_iterator& operator= (const reverse_iterator& src)
             {
-                _ptr = src._ptr;
+                _ptr = src.operator->();
                 return (*this);
             };
 
@@ -598,7 +610,19 @@ namespace ft
             const_reverse_iterator(void){};
 
             //contructors fill one
-            const_reverse_iterator(const_reverse_pointer ptr): _ptr(ptr){};
+            //const_reverse_iterator(const_reverse_pointer ptr): _ptr(ptr){};
+
+            //constructor by reverse iterator
+	        const_reverse_iterator(reverse_iterator<T> const &src)
+            {
+                _ptr = src.operator->();
+            };
+
+            //constructor by const iterator
+	        const_reverse_iterator(const_iterator<T> const &src)
+            {
+                _ptr = src.operator->();
+            };
 
             //const_reverseructor by copy
             const_reverse_iterator(const const_reverse_iterator &src)
@@ -610,7 +634,7 @@ namespace ft
             // operator =
 			const_reverse_iterator& operator= (const const_reverse_iterator& src)
             {
-                _ptr = src._ptr;
+                _ptr = src.operator->();
                 return (*this);
             };
 
