@@ -7,7 +7,9 @@
 # include <cstddef>
 # include <sstream>
 # include <iostream>
-# include "iterator.hpp"
+# include "reverse_iterator.hpp"
+# include "iterator_traits.hpp"
+# include "vector_iterator.hpp"
 # include "utils.hpp"
 
 
@@ -28,10 +30,10 @@ namespace ft
 			typedef typename	Alloc::const_reference			const_reference;
 			typedef typename	Alloc::pointer					pointer;
 			typedef typename	Alloc::const_pointer			const_pointer;
-			typedef				iterator<T>						iterator;
-			typedef				const_iterator<T>				const_iterator;
-			typedef				reverse_iterator<iterator>		reverse_iterator;
-			typedef				const_reverse_iterator<iterator>	const_reverse_iterator;
+			typedef				VectorIterator<pointer>			iterator;
+			typedef				VectorIterator<const_pointer>			const_iterator;
+			typedef				ft::reverse_iterator<iterator>		reverse_iterator;
+			typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			
 			/*class				out_of_range  : public std::exception
 			{ 
