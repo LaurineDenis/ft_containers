@@ -33,7 +33,7 @@ namespace ft
 			typedef				reverse_iterator<iterator>		reverse_iterator;
 			typedef				const_reverse_iterator<iterator>	const_reverse_iterator;
 			
-			class				out_of_range  : public std::exception
+			/*class				out_of_range  : public std::exception
 			{ 
 				virtual const char *what() const throw()
 				{
@@ -42,12 +42,13 @@ namespace ft
 				}
 			};
 			class				length_error : public std::exception
-			{ virtual const char *what() const throw()
+			{ 
+				virtual const char *what() const throw()
 				{
 					return "ft::Vector error : Length error!\n";
 				}
 			};
-
+*/
 		private :
 
 		//---------------VALUES----------------
@@ -317,7 +318,7 @@ namespace ft
 			void			reserve (size_type n)
 			{
 				if (n > max_size() || (n * 2) + _size_alloc > max_size())
-					throw vector::length_error();
+					throw std::length_error::exception();
 				// [1,2,3,4,5] n = 5 alloc = 6
 				if (_size_alloc == 0)
 				{
@@ -343,17 +344,12 @@ namespace ft
 			// operator [] Élément d'accès Renvoie une référence à l'élément à la position n dans le vecteur
 			reference operator[] (size_type n)
 			{
-				if (n > _size_filled || n < 0)
-					throw vector::out_of_range(); // out of range  
-			// ON NE DOIT PAS FAIRE LES VERIFICATION --> CHELOU
 				return (_array[n]);
 			};
 
 			// const operator []
 			const_reference operator[] (size_type n) const
 			{
-				if (n >= _size_filled || n < 0)
-					throw vector::out_of_range(); // out of range 
 				return (_array[n]);
 			};
 
@@ -361,7 +357,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::out_of_range(); // out of range
+					throw std::out_of_range("vector");
 				return (_array[n]);
 			};
 
@@ -369,7 +365,7 @@ namespace ft
 			const_reference at (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::out_of_range(); // out of range 
+					throw std::out_of_range("vector");
 				return (_array[n]);
 			};
 
