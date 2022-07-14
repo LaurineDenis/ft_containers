@@ -659,36 +659,38 @@ namespace ft
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-				return (save);
+				return (position);
 			};
 
 			//erase an range de first(inclu) a last(non inclu) 
 			iterator erase (iterator first, iterator last)
 			{
-				T		tmp[_size_filled - 1];
+				T		tmp[_size_filled];
 				iterator	it = begin();
 				iterator	save = begin();
+				iterator	_end = end();
 				int			j;
 				j = 0;
-				for (it = 0; it < end(); it++)
+				while (it != first)
 				{
-					if (it == first)
-					{
-						while (first != last && it != end())
-						{
-							first++;
-							it++;
-							_size_filled--;
-						}
-					}
-					tmp[j] = it;
-					j++;
+					tmp[j++] = *it;
+					it++;
+				}
+				while (it != last)
+					it++;
+				while (it != _end)
+				{
+					tmp[j++] = *it;
+					it++;
 				}
 				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				_size_filled = j;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-				return (save);
+					if (last == _end)
+						return (--_end);
+				return (last);
 			};
 
 			//clear suprimme tous les elements du tab
