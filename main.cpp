@@ -4,16 +4,6 @@
 
 #define TESTED_TYPE int
 
-void	is_empty(ft::vector<TESTED_TYPE> const &vct)
-{
-	std::cout << "is_empty: " << vct.empty() << std::endl;
-}
-
-void	iss_empty(std::vector<TESTED_TYPE> const &vct)
-{
-	std::cout << "is_empty: " << vct.empty() << std::endl;
-}
-
 void print(std::vector<int> const &input)
 {
 	for (size_t i =0; i < input.size() ; i++)
@@ -24,109 +14,126 @@ void print(std::vector<int> const &input)
 	}
 }
 
-int		main(void)
+int main(void)
 {
-//	const int start_size = 7;
-	ft::vector<TESTED_TYPE> vct(5,1);
-	ft::vector<TESTED_TYPE> vct2(vct);
+	ft::vector<TESTED_TYPE> vct(7);
 
-	std::vector<TESTED_TYPE> vct1(5,1);
-	std::vector<TESTED_TYPE> vct3(vct1);
+	for (unsigned long int i = 0; i < vct.size(); ++i)
+	{
+		vct.at(i) = (vct.size() - i) * 3;
+		std::cout << "vct[]: " << vct[i] << std::endl;
+	}
+	printSize(vct);
 
+	ft::vector<TESTED_TYPE> const vct_c(vct);
 
-//	 print(vct1);
-//	 printSize(vct);
-	 vct.print_element();
+	std::cout << "front(): " << vct.front() << " " << vct_c.front() << std::endl;
+	std::cout << "back(): " << vct.back() << " " <<  vct_c.back() << std::endl;
 
-	print(vct3);
-	printSize(vct2);
-	vct2.print_element();
-
-
-
-
-	vct3.insert(vct3.begin() + 3, 4,5);
-	print(vct3);
-	vct2.insert(vct2.begin() + 3, 4,5);
-	printSize(vct2);
-
-
-	//  vct1.push_back(6);
-	//  vct.push_back(6);
-	//  vct1.push_back(7);
-	//  vct.push_back(7);
-	//  print(vct1);
-	//  printSize(vct);
-
-
-
-//	std::vector<TESTED_TYPE> vct3;
-//	std::vector<TESTED_TYPE>::iterator il = vct1.begin();
-
-	// for (int i = 2; i < start_size; ++i)
-	// 	it[i] = (start_size - i) * 3;
-
-	// for (int i = 2; i < start_size; ++i)
-	// 	il[i] = (start_size - i) * 3;
-	//  print(vct1);
-	//  printSize(vct, true);
-
-	//   vct.resize(10, 42);
-	//  vct1.resize(10, 42);
-	//  print(vct1);
-	//   printSize(vct, true);
-
-	//  vct.resize(18, 43);
-	//  vct1.resize(18, 43);
-	//  print(vct1);
-	// printSize(vct, true);
-	
-	//  vct.resize(10);
-	//  vct1.resize(10);
-	//  print(vct1);
-	// printSize(vct, true);
-
-	//  vct.resize(23, 44);
-	//   vct1.resize(23, 44);
-	//  print(vct1);
-	//  printSize(vct, true);
-
-	//  vct.resize(5);
-	//  vct1.resize(5);
-	//  print(vct1);
-	// printSize(vct, true);
-	
-	
-	// vct.reserve(5);
-	// vct1.reserve(5);
-	//  print(vct1);
-	//  printSize(vct, true);
-
-	//  vct.resize(87);
-	//  vct1.resize(87);
-	// print(vct1);
-	// printSize(vct, true);
-
-	// vct.resize(5);
-	//  vct1.resize(5);
-	// print(vct1);
-	// printSize(vct, true);
-
-	//  is_empty(vct2);
-	//   iss_empty(vct3);
-
-	//  vct2 = vct;
-	//  vct3 = vct1;
-	//  print(vct3);
-	//  printSize(vct2, true);
-
-	// is_empty(vct2);
-	// vct.reserve(vct.capacity() + 1);
-	// printSize(vct, true);
-	// printSize(vct2, true);
-
-	// vct2.resize(0);
-	// is_empty(vct2);
-	// printSize(vct2, true);
-	return (0);
+	for (unsigned long int i = 0; i < vct_c.size(); ++i)
+		std::cout << "vct_c.at(): " << vct_c.at(i) << std::endl;
+	try {
+		std::cout << vct_c.at(10) << std::endl;
+	}
+	catch (std::out_of_range &e) {
+		std::cout << "Catch out_of_range exception1!" << std::endl;
+	}
+	catch (std::exception &e) {
+		std::cout << "Catch exception1: " << e.what() << std::endl;
+	}
+	printSize(vct_c);
+	return 0;
 }
+
+
+
+// int		main(void)
+// {
+// 	ft::vector<TESTED_TYPE> vct(5);
+// 	std::vector<TESTED_TYPE> vct_std(5);
+
+// 	vct.print_vector();
+// 	ft::vector<TESTED_TYPE>::iterator it = vct.begin(), ite = vct.end();
+// 	std::vector<TESTED_TYPE>::iterator il = vct_std.begin(), ile = vct_std.end();
+
+// 	std::cout << "len: " << (ite - it) << std::endl;
+// 	for (; it != ite; ++it)
+// 		*it = (ite - it);
+
+// 	for (; il != ile; ++il)
+// 		*il = (ile - il);
+// 	vct.print_vector();
+// 	print(vct_std);
+
+// 	 it = vct.begin();
+// 	 il = vct_std.begin();
+
+// std::cout << "being_0= " << *it << std::endl;
+// 	std::cout << "end_0= " << *ite << std::endl;
+
+// 	std::cout << "being_std_0= " << *il << std::endl;
+// 	std::cout << "end_std_0= " << *ile << std::endl;
+	
+// 	std::cout << "------------------------------"<< std::endl;
+
+// 	ft::vector<TESTED_TYPE> vct_range(it, --(--ite));
+// 	std::vector<TESTED_TYPE> vct_range_std(il, --(--ile));
+	
+// 	std::cout << "------------------------------"<< std::endl;
+
+// 	std::cout << "being= " << *it << std::endl;
+// 	std::cout << "end= " << *ite << std::endl;
+// 	// --(--ite);
+// 	// std::cout << "endekekkeke= " << *ite << std::endl;
+
+// 	std::cout << "being_std= " << *il << std::endl;
+// 	std::cout << "end_std=  " << *ile << std::endl;
+
+	
+// 	//  vct_range.print_vector();
+
+// 	for (int i = 0; it != ite; ++it)
+// 		*it = ++i * 5;
+
+// for (int i = 0; il != ile; ++il)
+// 		*il = ++i * 5;
+	
+// 	it = vct.begin();
+// 	il = vct_std.begin();
+
+// 	vct.print_vector();
+// 	print(vct_std);
+	 
+
+// 	ft::vector<TESTED_TYPE> vct_copy(vct);
+// 	std::vector<TESTED_TYPE> vct_copy_std(vct_std);
+
+// 	for (int i = 0; it != ite; ++it)
+// 		*it = ++i * 7;
+
+// 	for (int i = 0; il != ile; ++il)
+// 		*il = ++i * 7;
+
+// 	vct_copy.print_vector();
+// 	print(vct_copy_std);
+
+
+
+// 	// vct_copy.push_back(42);
+// 	// vct_copy.push_back(21);
+
+// 	// std::cout << "\t-- PART ONE --" << std::endl;
+// 	// printSize(vct);
+// 	// printSize(vct_range);
+// 	// printSize(vct_copy);
+
+// 	// vct = vct_copy;
+// 	// vct_copy = vct_range;
+// 	// vct_range.clear();
+
+// 	// std::cout << "\t-- PART TWO --" << std::endl;
+// 	// printSize(vct);
+// 	// printSize(vct_range);
+// 	// printSize(vct_copy);
+// 	return (0);
+// }

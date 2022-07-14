@@ -32,11 +32,13 @@ namespace ft
 			typedef				const_iterator<T>				const_iterator;
 			typedef				reverse_iterator<iterator>		reverse_iterator;
 			typedef				const_reverse_iterator<iterator>	const_reverse_iterator;
-			class				OutOfRange : public std::exception
+			
+			class				out_of_range  : public std::exception
 			{ 
 				virtual const char *what() const throw()
 				{
-					return "ft::Vector error : Out of range!\n";
+
+					return "Catch out_of_range exception!\n";
 				}
 			};
 			class				length_error : public std::exception
@@ -81,7 +83,9 @@ namespace ft
             typename ft::enable_if<!std::is_integral<InputIte>::value, InputIte>::type* = NULL)
             : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
+				std::cout << "end_0=  " << *last << std::endl;
 
+				
 				iterator count = first;
 				while (count++ != last)
 						_size_alloc++;
@@ -89,6 +93,11 @@ namespace ft
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
 				 while (first != last)
 				 	_array[_size_filled++]= *first++;
+				
+				std::cout << "end_1=  " << *last << std::endl;
+				print_vector();
+				// print_element();
+				
 			};
 			//Constructor by copy
 			//_alloc(allocator_type())
@@ -96,11 +105,11 @@ namespace ft
 			vector (const vector& x) :_size_alloc(x._size_alloc), _size_filled(0), _alloc(x._alloc)
 			{
 				//*this = x;
-				 std::cout << "constructor COPY 0" <<std::endl;
 				if (*this == x)
 					return;
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
 				insert(begin(), x.begin(), x.end()); 
+
 				//POURQUOI FAIRE CA ?
 
 			};
@@ -109,14 +118,13 @@ namespace ft
 			vector& operator= (const vector& x)
 			{
 
-			   std::cout << "operator = 0" << std::endl;
 				if (*this == x)
 					return *this;
-				_array = x._array;
 				_size_alloc = x._size_alloc;
 				_size_filled = x._size_filled;
-			//	print_vector();
-				print_element();
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
+				for (size_type i = 0; i < _size_filled; i++)
+					_array[i] = x._array[i];
 				return (*this);
 			};
 
@@ -132,9 +140,7 @@ namespace ft
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 			   		// std::cout << "destructor 2" << std::endl;
 					_size_alloc = 0;
-					std::cout << "destructeur" << std::endl;
 				}
-			     std::cout << "destructor 3" << std::endl;
 			};
 
 			
@@ -257,13 +263,11 @@ namespace ft
 						pop_back();
 						n++;
 					}
-					std::cout << "n= " << n << std::endl;
-					print_element();
 				}
 
 				if (_size_alloc > n)
 				{
-					std::cout << "coucou " << std::endl;
+					
 					// alloc = 10 et n =  5 alloc trop grande
 
 					T tmp[_size_filled + 1];
@@ -340,7 +344,7 @@ namespace ft
 			reference operator[] (size_type n)
 			{
 				if (n > _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range  
+					throw vector::out_of_range(); // out of range  
 			// ON NE DOIT PAS FAIRE LES VERIFICATION --> CHELOU
 				return (_array[n]);
 			};
@@ -349,7 +353,7 @@ namespace ft
 			const_reference operator[] (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range 
+					throw vector::out_of_range(); // out of range 
 				return (_array[n]);
 			};
 
@@ -357,7 +361,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range
+					throw vector::out_of_range(); // out of range
 				return (_array[n]);
 			};
 
@@ -365,7 +369,7 @@ namespace ft
 			const_reference at (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range 
+					throw vector::out_of_range(); // out of range 
 				return (_array[n]);
 			};
 
@@ -428,8 +432,8 @@ namespace ft
 
 				if (_size_alloc == 0)
 				{
-					_size_alloc++;
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc + 1));
+					_size_alloc += 2;
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 				}
 				else if (_size_alloc - 1 <= _size_filled) 
 					reserve(_size_alloc - 1);
@@ -449,6 +453,20 @@ namespace ft
 		// insert insertion de new element dans le vecteur 
 			iterator insert (iterator position, const value_type& val)
 			{
+
+				if (position < begin())
+				{
+						reserve(1);
+						int tmp = _size_filled +1;
+						while (tmp-- > 0)
+						{
+							_array[tmp] = _array[tmp - 1];
+						}
+						_array[0] = 0;
+						_size_filled++;
+						return (position);
+				}
+
 				iterator begin_index = begin();
 				size_t position_size = 0;
 				size_t end_size = 1;
@@ -457,7 +475,7 @@ namespace ft
 					push_back(val);
 					return (position);
 				}
-				reserve(_size_filled + 1);
+				reserve(1);
 				while (begin_index != position)
 				{
 					position_size++;
@@ -486,8 +504,27 @@ namespace ft
 
     		void insert (iterator position, size_type n, const value_type& val)
 			{
-				std::cout << "insert_0" << std::endl;
 				//print_element();
+			 	// std::cout << "position= " << *position << std::endl;
+				// if (position < begin())
+				// {
+				// 		reserve(n);
+				// 		size_t tmp = (_size_filled + n);
+				// 		int i = _size_filled;
+				// 		_array[0] = 0;
+				// 		while (i-- >= 0)
+				// 		{
+				// 			_array[tmp--] = _array[i];
+				// 		}
+				// 		print_vector();
+				// 		print_element();
+				// 		return ;
+
+			
+				// }
+		//		COMPORTEMENT INDE
+
+
 				iterator it = position;
 				iterator begin_index = begin();
 				size_t		end_size = n;
@@ -500,8 +537,6 @@ namespace ft
 					return ;
 				}
 				reserve(n);
-				print_element();
-
 				while (begin_index != position)
 				{
 					position_size++;
@@ -516,8 +551,8 @@ namespace ft
 				T tmp[n + _size_alloc];
 				for (size_type i = 0; i != position_size; i++)
 					tmp[i] = _array[i];
-				for (size_type y = position_size; y != n; y++)
-					tmp[y] = val;
+				for (size_type y = position_size; y != n + position_size; y++)
+						tmp[y] = val;
 				for (size_type y = position_size + n; y != end_size; y++)
 				{
 					tmp[y] = _array[position_size];
@@ -535,7 +570,6 @@ namespace ft
 				size_t		count = 0;
 				InputIterator save = first;
 
-				std::cout << "coucou " << std::endl ;
 				while (save != last)
 				{
 					save++;
@@ -560,7 +594,7 @@ namespace ft
 
 					T tmp[_size_filled + count];
 					size_type y = 0;
-					reserve(count + _size_filled);// enelever +size
+					reserve(count);// enelever +size
 					_size_filled += count;
 					while (begin_index != position)
 					{
@@ -662,21 +696,16 @@ namespace ft
 			//clear suprimme tous les elements du tab
 			void clear()
 			{
-			//	print_element();
-			//	print_vector();
-				std::cout << "clear" << std::endl;
 				while(_size_filled > 0)
 				{
-					std::cout << "clear 1" << std::endl;
 					pop_back();
 				}
 				if (_size_alloc > 0)
 				{
-					std::cout << "clear 2" << std::endl;
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-				}
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 				_size_alloc = 2;
+				}
 			};
 			
 	};

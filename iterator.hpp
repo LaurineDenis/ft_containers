@@ -40,14 +40,20 @@ namespace ft
             //Constructor by copy
             iterator(const iterator &src)
             {
+            //    std::cout << "copyyyyyy= " << std::endl;
+
                 if (*this != src)
 					*this = src;
             }
            
             // operator =
-			iterator& operator= (const iterator& src)
+			iterator& operator= (iterator const &src)
             {
-                _ptr = src.operator->();
+				
+
+                _ptr = src._ptr;
+            //   std::cout << "ap_ptr_lala= "<< *_ptr << std::endl;
+
                 return (*this);
             }
 
@@ -59,6 +65,7 @@ namespace ft
             iterator operator ++()
             {
                 _ptr++;
+             //   std::cout << "coucou" << std::endl;
                 return (*this);
             }
 
@@ -77,6 +84,7 @@ namespace ft
             iterator operator --()
             {
                 _ptr--;
+                std::cout << "ap_ptr= "<< *_ptr << std::endl;
                 return (*this);
             }
 
@@ -85,6 +93,7 @@ namespace ft
             {
                 iterator index;
                 index = *this;
+              //  std::cout << "coucou" << std::endl;
                 --_ptr;
                 return (index);
             };
@@ -104,6 +113,7 @@ namespace ft
             // a - n
             iterator operator -(int n)
             {
+
                 iterator tmp;
                 tmp = *this;
                 for (int i = 0; i < n; i++)
@@ -120,6 +130,7 @@ namespace ft
             // a - b
             int operator -(iterator b)
             {
+
                 return (_ptr - b._ptr);
             };
 
@@ -134,6 +145,7 @@ namespace ft
             // a -= n
              iterator operator -=(int n)
             {
+
                 for (int i = 0; i < n; i++)
                     _ptr--;
                 return (*this);
@@ -143,6 +155,7 @@ namespace ft
             //==
             bool operator== (const iterator& b) 
             {
+
                 return (_ptr == b._ptr);
             };
 
@@ -155,6 +168,7 @@ namespace ft
             // <
             bool operator< (const iterator& b) 
             {
+
                 return (_ptr < b._ptr);
             };
 
@@ -192,12 +206,16 @@ namespace ft
             // *a
             reference operator* ()
             {
+         //     std::cout << "coucou" << std::endl;
+                
                 return (*_ptr);
             };
+
 
             // ->
             pointer operator->() const
             {
+
                 return (_ptr);
             };
     };
