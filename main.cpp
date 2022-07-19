@@ -1,10 +1,13 @@
 #include "common.hpp"
 #include <vector>
 #include <iostream>
+#include <list>
 
-#define TESTED_TYPE std::string
 
-void print(std::vector<std::string> const &input)
+
+#define TESTED_TYPE int
+
+void print(std::vector<int> const &input)
 {
 	for (size_t i =0; i < input.size() ; i++)
 	{
@@ -13,65 +16,39 @@ void print(std::vector<std::string> const &input)
 	}
 }
 
-void	checkErase_std(std::vector<TESTED_TYPE> const &vct,
-					std::vector<TESTED_TYPE>::const_iterator const &it)
+template <class T, class Alloc>
+void	cmp(const ft::vector<T, Alloc> &lhs, const ft::vector<T, Alloc> &rhs)
 {
-	
 	static int i = 0;
-	std::cout << "it_std = " << *it << " vct.begin_std= " << *vct.begin() << std::endl;
 
-	std::cout << "[" << i++ << "] " << "erase: " << it - vct.begin() << std::endl;
-	print(vct);
-}
-void	checkErase(ft::vector<TESTED_TYPE> const &vct,
-					ft::vector<TESTED_TYPE>::const_iterator const &it)
-{
-	static int i = 0;
-	std::cout << "it = " << *it << " vct.begin= " << *vct.begin() << std::endl;
-	std::cout << "[" << i++ << "] " << "erase: " << it - vct.begin() << std::endl;
-//	printSize(vct);
+	std::cout << "############### [" << i++ << "] ###############"  << std::endl;
+//	std::cout << "eq: " << (lhs == rhs) << " | ne: " << (lhs != rhs) << std::endl;
+	std::cout << "lt: " << (lhs <  rhs) << " | le: " << (lhs <= rhs) << std::endl;
+	std::cout << "gt: " << (lhs >  rhs) << " | ge: " << (lhs >= rhs) << std::endl;
 }
 
 int		main(void)
 {
-	ft::vector<TESTED_TYPE> vct(10);
+	ft::vector<TESTED_TYPE> vct(4);
+	ft::vector<TESTED_TYPE> vct2(4);
 
-	std::vector<TESTED_TYPE> vct_std(10);
-	for (unsigned long int i = 0; i < vct.size(); ++i)
-		vct[i] = std::string((vct.size() - i), i + 65);
+	//cmp(vct, vct);  // 0
+//	cmp(vct, vct2); // 1
 
-	for (unsigned long int i = 0; i < vct_std.size(); ++i)
-	
-		vct_std[i] = std::string((vct_std.size() - i), i + 65);
+	vct2.resize(10);
+	//cmp(vct, vct2); // 2
+	// cmp(vct2, vct); // 3
 
+	 vct[2] = 42;
 	printSize(vct);
-	print(vct_std);
 
-	//checkErase(vct, vct.erase(vct.begin() + 2));
-	//checkErase_std(vct_std, vct_std.erase(vct_std.begin() + 2));
-	
+	 cmp(vct, vct2); // 4
+	// cmp(vct2, vct); // 5
 
+	// swap(vct, vct2);
 
-	//checkErase(vct, vct.erase(vct.begin()));
-	//checkErase(vct, vct.erase(vct.end() - 1));
-
-
-
-	checkErase_std(vct_std, vct_std.erase(vct_std.begin(), vct_std.begin() +3 ));
-	checkErase(vct, vct.erase(vct.begin(), vct.begin() + 3));
-	checkErase(vct, vct.erase(vct.end() - 3, vct.end() - 1));
-
-	vct.push_back("Hello");
-	vct.push_back("Hi there");
-	printSize(vct);
-	checkErase(vct, vct.erase(vct.end() - 3, vct.end()));
-
-	vct.push_back("ONE");
-	vct.push_back("TWO");
-	vct.push_back("THREE");
-	vct.push_back("FOUR");
-	printSize(vct);
-	checkErase(vct, vct.erase(vct.begin(), vct.end()));
+	// cmp(vct, vct2); // 6
+	// cmp(vct2, vct); // 7
 
 	return (0);
 }

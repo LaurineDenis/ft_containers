@@ -86,10 +86,10 @@ namespace ft
             typename ft::enable_if<!std::is_integral<InputIte>::value, InputIte>::type* = NULL)
             : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				std::cout << "end_0=  " << *last << std::endl;
+				//std::cout << "end_0=  " << *last << std::endl;
 
 				
-				iterator count = first;
+				InputIte count = first;
 				while (count++ != last)
 						_size_alloc++;
 				_size_alloc += 1;
@@ -97,8 +97,8 @@ namespace ft
 				 while (first != last)
 				 	_array[_size_filled++]= *first++;
 				
-				std::cout << "end_1=  " << *last << std::endl;
-				print_vector();
+				//std::cout << "end_1=  " << *last << std::endl;
+				//print_vector();
 				// print_element();
 				
 			};
@@ -688,9 +688,7 @@ namespace ft
 				_size_filled = j;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-					if (last == _end)
-						return (--_end);
-				return (last);
+				return (first);
 			};
 
 			//clear suprimme tous les elements du tab
@@ -717,13 +715,18 @@ namespace ft
 			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
 				if (lhs.size() != rhs.size())
-					return (false);
+						return (false);
 				typename ft::vector<T>::const_iterator first_lhs = lhs.begin();
 				typename ft::vector<T>::const_iterator first_rhs = rhs.begin();
 				while (first_lhs != lhs.end() && first_rhs != rhs.end())
 				{
-					if (first_lhs != first_rhs)
-						return (false);
+						//std::cout << "first_lhs_0 = " << *first_lhs <<" first_rhs_0 = "<< *first_rhs << std::endl;
+
+					if (*first_lhs != *first_rhs)
+					{
+					//	std::cout << "first_lhs = " << *first_lhs <<" first_rhs = "<< *first_rhs << std::endl;
+							return (false);
+					}
 					first_lhs++;
 					first_rhs++;
 				}
@@ -740,17 +743,22 @@ namespace ft
 		template <class T, class Alloc>
 			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
+
 				if (lhs == rhs)
 					return (false);
 				typename ft::vector<T>::const_iterator first_lhs = lhs.begin(); // on doit faire un template d'iterator
 				typename ft::vector<T>::const_iterator  first_rhs = rhs.begin();
+//				std::cout << "first_lhs_0 = " << *first_lhs <<" first_rhs_0 = "<< *first_rhs << std::endl;
 				while (first_lhs != lhs.end() && first_rhs != rhs.end())
 				{
 					first_lhs++;
 					first_rhs++;
 				}
-				if (first_lhs != lhs.end) // on regarde si on a reussi a aller a la fin du vecteur 
-					return (true); // si c'est pas le cas ca veut dire que rhs a terminé la boucle mais que lhs nn; donc elle est plus petite
+					std::cout << "first_lhs = " << *first_lhs <<" lhs.end = "<< *lhs.end() << std::endl;
+				if (first_rhs != rhs.end()) // on regarde si on a reussi a aller a la fin du vecteur 
+				{
+					return (true);
+				} // si c'est pas le cas ca veut dire que rhs a terminé la boucle mais que lhs nn; donc elle est plus petite
 				return (false);
 			};
 		
@@ -760,7 +768,7 @@ namespace ft
 			{
 				if (lhs == rhs)
 					return (true);
-				return (!(lhs < rhs));
+				return (!(lhs > rhs));
 			};
 		
 		// relational operators >
