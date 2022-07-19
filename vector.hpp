@@ -35,22 +35,6 @@ namespace ft
 			typedef				ft::reverse_iterator<iterator>		reverse_iterator;
 			typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			
-			/*class				out_of_range  : public std::exception
-			{ 
-				virtual const char *what() const throw()
-				{
-
-					return "Catch out_of_range exception!\n";
-				}
-			};
-			class				length_error : public std::exception
-			{ 
-				virtual const char *what() const throw()
-				{
-					return "ft::Vector error : Length error!\n";
-				}
-			};
-*/
 		private :
 
 		//---------------VALUES----------------
@@ -67,8 +51,6 @@ namespace ft
 			//contructors by default
 			explicit vector (const Alloc& alloc = Alloc()): _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				// std::cout << "constructor by default 0" <<std::endl;
-				// _array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 			};
 
 			//contructors fill one (remplir)
@@ -86,8 +68,6 @@ namespace ft
             typename ft::enable_if<!std::is_integral<InputIte>::value, InputIte>::type* = NULL)
             : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				//std::cout << "end_0=  " << *last << std::endl;
-
 				
 				InputIte count = first;
 				while (count++ != last)
@@ -97,23 +77,17 @@ namespace ft
 				 while (first != last)
 				 	_array[_size_filled++]= *first++;
 				
-				//std::cout << "end_1=  " << *last << std::endl;
-				//print_vector();
-				// print_element();
-				
 			};
+
 			//Constructor by copy
 			//_alloc(allocator_type())
 			
 			vector (const vector& x) :_size_alloc(x._size_alloc), _size_filled(0), _alloc(x._alloc)
 			{
-				//*this = x;
 				if (*this == x)
 					return;
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
 				insert(begin(), x.begin(), x.end()); 
-
-				//POURQUOI FAIRE CA ?
 
 			};
 
@@ -134,14 +108,10 @@ namespace ft
 			//destructeur
 			~vector()
 			{
-			//    std::cout << "destructor 0" << std::endl;
 				this->clear();
-			//    std::cout << "destructor 1" << std::endl;
-			//	print_element();
 				if (_size_alloc > 0)
 				{
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-			   		// std::cout << "destructor 2" << std::endl;
 					_size_alloc = 0;
 				}
 			};
@@ -166,26 +136,11 @@ namespace ft
 				std::cout << "Size filled : " << _size_filled << std::endl;
 			};
 
-		//-------------EXCEPTIONS------------
-
-			// const char		*vector<T, Alloc>::OutOfRange::what() const throw()
-			// {
-			// 	return "ft::Vector error : Out of range!\n";
-			// }
-
-			// const char		*vector<T, Alloc>::length_error::what() const throw()
-			// {
-			// 	return "ft::Vector error : Length error!\n";
-			// }
-
 		//-------------ITERATORS-------------
 
 			// begin Renvoie un itérateur pointant vers le premier élément du vecteur.
 			iterator begin()
 			{
-				// print_element();
-				// std::cout << "begin = " << _array[12] << std::endl;
-
 				return (iterator(_array));
 			};
 
@@ -210,25 +165,25 @@ namespace ft
 			// rbegin pointe vers l'élément juste avant celui qui serait pointé par member end.
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(--(this->end())));
+				return (reverse_iterator(this->_array + (this->_size_filled)));
 			};
 
 			// rbegin const
 			const_reverse_iterator rbegin() const
 			{
-				return (rbegin());
+				return (const_reverse_iterator(this->_array + (this->_size_filled)));
 			};
 
 
 			// rend Renvoie un itérateur inverse pointant vers l'élément théorique précédant le premier élément du vecteur
 			reverse_iterator rend()
 			{
-				return (reverse_iterator(--(this->begin())));
+				return (reverse_iterator((this->begin())));
 			};
 			// rend const
 			const_reverse_iterator rend() const
 			{
-				return (rend());
+				return (const_reverse_iterator((rend())));
 			};
 		//-------------CAPACITY-------------
 			//size
@@ -248,16 +203,6 @@ namespace ft
 			//resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				// std::cout << "size_filled = " << _size_filled << std::endl;
-				// std::cout << "n = " << n << std::endl;
-				// std::cout << "_size_alloc = " << _size_alloc << std::endl;
-
-
-				// resize(1); 
-				//[1,2,3,4,5]  alloc = 6 size_filled=5
-
-				//[1] alloc = 6 size_filed 1
-				//  
 				if (n <= _size_filled)
 				{
 					size_type i = _size_filled;
@@ -282,9 +227,6 @@ namespace ft
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 					for (size_type i = 0; i < tmp_size; i++)
 						_array[i] = tmp[i];
-					// for (size_type i = tmp_size ; i < _size_alloc - 1; i++)
-					// 	_array[i] = tmp[i];
-					// _size_filled = n;
 				}
 				else if (_size_alloc < n)
 				{   // size_alloc = 4 et n= 10
@@ -398,6 +340,7 @@ namespace ft
 			
 		//-------------MODIFIERS-------------
 
+		//ATTENTION ENLEVER LE STD EN FT
 		// assign Affecte un nouveau contenu au vecteur, en remplaçant son contenu actuel et en modifiant sa taille en conséquence.
 		// assign (1) les nouveaux contenus sont des éléments construits à partir de chacun des éléments de la gamme entre premier et dernier, dans le même ordre
 		template <class InputIterator>
@@ -437,14 +380,12 @@ namespace ft
 					reserve(_size_alloc - 1);
 				_array[_size_filled] = val;
 				_size_filled++;
-				// print_element();
 				
 			};
 
 		//pop_back Supprime le dernier élément du vecteur, réduisant ainsi la taille du conteneur d'une unité
 			void pop_back()
 			{
-				//std::cout << "pop back 0" <<std::endl;
 				_size_filled--;
 			};
 		
@@ -494,8 +435,6 @@ namespace ft
 				_size_filled++;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-		//		std::cout << "val = "<< tmp[position_size] << std::endl;
-		//		std::cout << "pos = "<< *position << std::endl;
 				position = _array + position_size;
 				return(position);
 			};
@@ -560,7 +499,8 @@ namespace ft
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
 			};
-	
+
+		//ATTENTION METTRE STD EN FT
 		template <class InputIterator>
    			void insert (iterator position, InputIterator first, InputIterator last,
 			 typename ft::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
@@ -586,7 +526,7 @@ namespace ft
 						first++;
 					}
 				}
-				// cas 3 : rajouter en plein milieux 
+				// cas 2 : rajouter en plein milieux 
 				else 
 				{
 
@@ -619,7 +559,6 @@ namespace ft
 		// swap 
 			void swap (vector& x)
 			{
-			    // std::cout << "swap 0" << std::endl;
 				T		*tmp_array = x._array;
 				size_type	tmp_size_filled = x._size_filled;
 				size_type	tmp_size_alloc = x._size_alloc;
@@ -715,22 +654,8 @@ namespace ft
 			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
 				if (lhs.size() != rhs.size())
-						return (false);
-				typename ft::vector<T>::const_iterator first_lhs = lhs.begin();
-				typename ft::vector<T>::const_iterator first_rhs = rhs.begin();
-				while (first_lhs != lhs.end() && first_rhs != rhs.end())
-				{
-						//std::cout << "first_lhs_0 = " << *first_lhs <<" first_rhs_0 = "<< *first_rhs << std::endl;
-
-					if (*first_lhs != *first_rhs)
-					{
-					//	std::cout << "first_lhs = " << *first_lhs <<" first_rhs = "<< *first_rhs << std::endl;
-							return (false);
-					}
-					first_lhs++;
-					first_rhs++;
-				}
-				return (true);
+					return false;
+				return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 			};
 		// relational operators !=
 		template <class T, class Alloc>
@@ -744,22 +669,8 @@ namespace ft
 			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
 
-				if (lhs == rhs)
-					return (false);
-				typename ft::vector<T>::const_iterator first_lhs = lhs.begin(); // on doit faire un template d'iterator
-				typename ft::vector<T>::const_iterator  first_rhs = rhs.begin();
-//				std::cout << "first_lhs_0 = " << *first_lhs <<" first_rhs_0 = "<< *first_rhs << std::endl;
-				while (first_lhs != lhs.end() && first_rhs != rhs.end())
-				{
-					first_lhs++;
-					first_rhs++;
-				}
-					std::cout << "first_lhs = " << *first_lhs <<" lhs.end = "<< *lhs.end() << std::endl;
-				if (first_rhs != rhs.end()) // on regarde si on a reussi a aller a la fin du vecteur 
-				{
-					return (true);
-				} // si c'est pas le cas ca veut dire que rhs a terminé la boucle mais que lhs nn; donc elle est plus petite
-				return (false);
+				return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+
 			};
 		
 		// relational operators <=
