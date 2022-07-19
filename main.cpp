@@ -1,36 +1,45 @@
 #include "common.hpp"
-#include "vector.hpp"
-#include <list>
+
+/*
+single element (1)
+	iterator insert (iterator position, const value_type& val);
+
+fill (2)
+    void insert (iterator position, size_type n, const value_type& val);
+
+range (3)
+	template <class InputIterator>
+		void insert (iterator position, InputIterator first, InputIterator last);
+*/
 
 #define TESTED_TYPE int
 
-int main ()
+int		main(void)
 {
-	ft::vector<TESTED_TYPE> foo(3, 15);
-	ft::vector<TESTED_TYPE> bar(5, 42);
-	
-	ft::vector<TESTED_TYPE>::const_iterator it_foo = foo.begin();
-	ft::vector<TESTED_TYPE>::const_iterator it_bar = bar.begin();
+	ft::vector<TESTED_TYPE> vct(10);
+	ft::vector<TESTED_TYPE> vct2;
 
-	std::cout << "BEFORE SWAP" << std::endl;
+	for (unsigned long int i = 0; i < vct.size(); ++i)
+		vct[i] = (vct.size() - i) * 3;
+	printSize(vct);
 
-	std::cout << "foo contains:" << std::endl;
-	printSize(foo);
-	std::cout << "bar contains:" << std::endl;
-	printSize(bar);
+	vct2.insert(vct2.end(), 42);
+	vct2.insert(vct2.begin(), 2, 21);
+	printSize(vct2);
 
-	foo.swap(bar);
+	vct2.insert(vct2.end() - 2, 42);
+	printSize(vct2);
 
-	std::cout << "AFTER SWAP" << std::endl;
+	vct2.insert(vct2.end(), 2, 84);
+	printSize(vct2);
 
-	std::cout << "foo contains:" << std::endl;
-	printSize(foo);
-	std::cout << "bar contains:" << std::endl;
-	printSize(bar);
+	vct2.resize(4);
+	printSize(vct2);
 
-	std::cout << "Iterator validity:" << std::endl;
-	std::cout << (it_foo == bar.begin()) << std::endl;
-	std::cout << (it_bar == foo.begin()) << std::endl;
+	vct2.insert(vct2.begin() + 2, vct.begin(), vct.end());
+	vct.clear();
+	printSize(vct2);
 
+	printSize(vct);
 	return (0);
 }
