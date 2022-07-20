@@ -7,9 +7,9 @@
 # include <cstddef>
 # include <sstream>
 # include <iostream>
-# include "reverse_iterator.hpp"
+//# include "reverse_iterator.hpp"
 # include "iterator_traits.hpp"
-# include "vector_iterator.hpp"
+# include "iterator.hpp"
 # include "utils.hpp"
 
 
@@ -30,10 +30,22 @@ namespace ft
 			typedef typename	Alloc::const_reference			const_reference;
 			typedef typename	Alloc::pointer					pointer;
 			typedef typename	Alloc::const_pointer			const_pointer;
-			typedef				VectorIterator<pointer>			iterator;
-			typedef				VectorIterator<const_pointer>			const_iterator;
-			typedef				ft::reverse_iterator<iterator>		reverse_iterator;
-			typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
+
+
+			typedef				ft::Iterator<T>					iterator;
+			typedef				ft::Iterator<T>					const_iterator;
+			typedef				ft::reverse_iterator<T>			reverse_iterator;
+			typedef				ft::reverse_iterator<T>			const_reverse_iterator;
+		//	typedef typename 	ft::iterator_traits<iterator>::difference_type	difference_type;
+			
+			
+			
+			
+			// typedef				VectorIterator<pointer>			iterator;
+			// typedef				VectorIterator<const_pointer>			const_iterator;
+			// typedef				ft::reverse_iterator<iterator>		reverse_iterator;
+			// typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			
 		private :
 
@@ -141,6 +153,7 @@ namespace ft
 			// begin Renvoie un itérateur pointant vers le premier élément du vecteur.
 			iterator begin()
 			{
+				std::cout << "coucou: "<< *_array << std::endl;
 				return (iterator(_array));
 			};
 

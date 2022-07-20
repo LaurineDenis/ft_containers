@@ -12,53 +12,44 @@
 // 	}
 // }
 
-#define TESTED_TYPE int
-typedef std::list<TESTED_TYPE> container_type;
-#define t_stack_ ft::stack<TESTED_TYPE, container_type>
+#define TESTED_TYPE std::string
 
-template <class T_STACK>
-void	cmp(const T_STACK &lhs, const T_STACK &rhs)
+void	checkErase(ft::vector<TESTED_TYPE> const &vct,
+					ft::vector<TESTED_TYPE>::const_iterator const &it)
 {
+	std::cout << "it = " << *it<< std::endl;
 	static int i = 0;
-
-	std::cout << "############### [" << i++ << "] ###############"  << std::endl;
-	std::cout << "eq: " << (lhs == rhs) << " | ne: " << (lhs != rhs) << std::endl;
-	std::cout << "lt: " << (lhs <  rhs) << " | le: " << (lhs <= rhs) << std::endl;
-	std::cout << "gt: " << (lhs >  rhs) << " | ge: " << (lhs >= rhs) << std::endl;
+	std::cout << "[" << i++ << "] " << "erase: " << it - vct.begin() << std::endl;
+	printSize(vct);
 }
 
 int		main(void)
 {
-	container_type	ctnr;
+	ft::vector<TESTED_TYPE> vct(10);
 
-	ctnr.push_back(21);
-	ctnr.push_back(42);
-	ctnr.push_back(1337);
-	ctnr.push_back(19);
-	ctnr.push_back(0);
-	ctnr.push_back(183792);
+	for (unsigned long int i = 0; i < vct.size(); ++i)
+		vct[i] = std::string((vct.size() - i), i + 65);
+	printSize(vct);
 
-	t_stack_	stck(ctnr);
-	t_stack_	stck2(ctnr);
+	checkErase(vct, vct.erase(vct.begin()));
 
-	cmp(stck, stck);  // 0
-	cmp(stck, stck2); // 1
+	checkErase(vct, vct.erase(vct.begin()));
+	checkErase(vct, vct.erase(vct.end() - 1));
 
-	stck2.push(60);
-	stck2.push(61);
-	stck2.push(62);
+	checkErase(vct, vct.erase(vct.begin(), vct.begin() + 3));
+	checkErase(vct, vct.erase(vct.end() - 3, vct.end() - 1));
 
-	cmp(stck, stck2); // 2
-	cmp(stck2, stck); // 3
+	vct.push_back("Hello");
+	vct.push_back("Hi there");
+	printSize(vct);
+	checkErase(vct, vct.erase(vct.end() - 3, vct.end()));
 
-	stck.push(42);
+	vct.push_back("ONE");
+	vct.push_back("TWO");
+	vct.push_back("THREE");
+	vct.push_back("FOUR");
+	printSize(vct);
+	checkErase(vct, vct.erase(vct.begin(), vct.end()));
 
-	cmp(stck, stck2); // 4
-	cmp(stck2, stck); // 5
-
-	stck.push(100);
-
-	cmp(stck, stck2); // 6
-	cmp(stck2, stck); // 7
 	return (0);
 }
