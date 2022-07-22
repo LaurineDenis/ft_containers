@@ -7,6 +7,8 @@
 # include <cstddef>
 # include <sstream>
 # include <iostream>
+//# include "reverse_iterator.hpp"
+# include "iterator_traits.hpp"
 # include "iterator.hpp"
 # include "utils.hpp"
 
@@ -28,24 +30,23 @@ namespace ft
 			typedef typename	Alloc::const_reference			const_reference;
 			typedef typename	Alloc::pointer					pointer;
 			typedef typename	Alloc::const_pointer			const_pointer;
-			typedef				iterator<T>						iterator;
-			typedef				const_iterator<T>				const_iterator;
-			typedef				reverse_iterator<iterator>		reverse_iterator;
-			typedef				const_reverse_iterator<iterator>	const_reverse_iterator;
-			class				OutOfRange : public std::exception
-			{ 
-				virtual const char *what() const throw()
-				{
-					return "ft::Vector error : Out of range!\n";
-				}
-			};
-			class				length_error : public std::exception
-			{ virtual const char *what() const throw()
-				{
-					return "ft::Vector error : Length error!\n";
-				}
-			};
 
+
+
+		// 	typedef				ft::Iterator<T>					iterator;
+		// 	typedef				ft::Const_iterator<T>			const_iterator;
+		// 	typedef				ft::reverse_iterator<T>			reverse_iterator;
+		// 	typedef				ft::reverse_iterator<T>			const_reverse_iterator;
+		// //	typedef typename 	ft::iterator_traits<iterator>::difference_type	difference_type;
+			
+			
+			
+			
+			typedef				iterator_vector<pointer>			iterator;
+			typedef				iterator_vector<const_pointer>			const_iterator;
+			typedef				ft::reverse_iterator<iterator>		reverse_iterator;
+			typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+			
 		private :
 
 		//---------------VALUES----------------
@@ -62,47 +63,43 @@ namespace ft
 			//contructors by default
 			explicit vector (const Alloc& alloc = Alloc()): _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				// std::cout << "constructor by default 0" <<std::endl;
-				// _array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 			};
 
 			//contructors fill one (remplir)
-			explicit vector (size_type n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n), _size_filled(0), _alloc(alloc)
+			explicit vector (size_type n, const value_type& val = value_type(), const Alloc& alloc = Alloc()) : _size_alloc(n +1), _size_filled(n), _alloc(alloc)
 			{
-				// std::cout << "constructor by value 0" <<std::endl;
-				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * n));
-				for ( _size_filled= 0; _size_filled < n; _size_filled++)
-				{
-					_array[_size_filled] = val;
-				}
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				for ( size_t i = 0; i < n; i++)
+					_array[i] = val;
 			};
-
-			//ATTENTION CHANGER STD en FT !!!!!!!!!!
+		
 			//Constructor fill list (remplir)
-			template <class InputIte>
-			vector(InputIte first, InputIte last, const Alloc& alloc = Alloc(),
-			typename ft::enable_if<!std::is_integral<InputIte>::value, InputIte>::type* = NULL)
-			: _size_alloc(0), _size_filled(0), _alloc(alloc)
+			//Constructor fill list (remplir)
+            template <class InputIte>
+            vector(InputIte first, InputIte last, const Alloc& alloc = Alloc(),
+            typename ft::enable_if<!std::is_integral<InputIte>::value, InputIte>::type* = NULL)
+            : _size_alloc(0), _size_filled(0), _alloc(alloc)
 			{
-				// std::cout << "constructor by list 0" <<std::endl;
-				while (first != last)
-				{
-					this->push_back(*first);
-					first++;
-				}
+				
+				InputIte count = first;
+				while (count++ != last)
+						_size_alloc++;
+				_size_alloc += 1;
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
+				 while (first != last)
+				 	_array[_size_filled++]= *first++;
+				
 			};
 
 			//Constructor by copy
 			//_alloc(allocator_type())
-			vector (const vector& x) :_size_alloc(0), _size_filled(0), _alloc(x._alloc)
+			
+			vector (const vector& x) :_size_alloc(x._size_alloc), _size_filled(0), _alloc(x._alloc)
 			{
-				//*this = x;
-				 //std::cout << "constructor COPY 0" <<std::endl;
-
 				if (*this == x)
 					return;
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
 				insert(begin(), x.begin(), x.end()); 
-				//POURQUOI FAIRE CA ?
 
 			};
 
@@ -110,30 +107,25 @@ namespace ft
 			vector& operator= (const vector& x)
 			{
 
-			//    std::cout << "operator = 0" << std::endl;
 				if (*this == x)
 					return *this;
-				_array = x._array;
 				_size_alloc = x._size_alloc;
 				_size_filled = x._size_filled;
-		//		print_vector();
+				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));	
+				for (size_type i = 0; i < _size_filled; i++)
+					_array[i] = x._array[i];
 				return (*this);
 			};
 
 			//destructeur
 			~vector()
 			{
-			//    std::cout << "destructor 0" << std::endl;
 				this->clear();
-			//    std::cout << "destructor 1" << std::endl;
-			//	print_element();
 				if (_size_alloc > 0)
 				{
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-			   		// std::cout << "destructor 2" << std::endl;
 					_size_alloc = 0;
 				}
-			   //  std::cout << "destructor 3" << std::endl;
 			};
 
 			
@@ -156,32 +148,19 @@ namespace ft
 				std::cout << "Size filled : " << _size_filled << std::endl;
 			};
 
-		//-------------EXCEPTIONS------------
-
-			// const char		*vector<T, Alloc>::OutOfRange::what() const throw()
-			// {
-			// 	return "ft::Vector error : Out of range!\n";
-			// }
-
-			// const char		*vector<T, Alloc>::length_error::what() const throw()
-			// {
-			// 	return "ft::Vector error : Length error!\n";
-			// }
-
 		//-------------ITERATORS-------------
 
 			// begin Renvoie un itérateur pointant vers le premier élément du vecteur.
 			iterator begin()
 			{
-				// print_element();
-				// std::cout << "begin = " << _array[12] << std::endl;
-
+				//std::cout << "coucou: "<< *_array << std::endl;
 				return (iterator(_array));
 			};
 
 			// begin const
 			const_iterator begin() const
 			{
+
 				return (const_iterator(_array));
 			};
 
@@ -194,31 +173,32 @@ namespace ft
 			// end const
 			const_iterator end() const
 			{
+
 				return (const_iterator(_array + _size_filled));
 			};
 
 			// rbegin pointe vers l'élément juste avant celui qui serait pointé par member end.
 			reverse_iterator rbegin()
 			{
-				return (reverse_iterator(--(this->end())));
+				return (reverse_iterator(this->_array + (this->_size_filled)));
 			};
 
 			// rbegin const
 			const_reverse_iterator rbegin() const
 			{
-				return (rbegin());
+				return (const_reverse_iterator(this->_array + (this->_size_filled)));
 			};
 
 
 			// rend Renvoie un itérateur inverse pointant vers l'élément théorique précédant le premier élément du vecteur
 			reverse_iterator rend()
 			{
-				return (reverse_iterator(--(this->begin())));
+				return (reverse_iterator((this->begin())));
 			};
 			// rend const
 			const_reverse_iterator rend() const
 			{
-				return (rend());
+				return (const_reverse_iterator((rend())));
 			};
 		//-------------CAPACITY-------------
 			//size
@@ -238,11 +218,6 @@ namespace ft
 			//resize
 			void resize (size_type n, value_type val = value_type())
 			{
-				// std::cout << "size_filled = " << _size_filled << std::endl;
-				// std::cout << "n = " << n << std::endl;
-				// std::cout << "_size_alloc = " << _size_alloc << std::endl;
-
-
 				if (n <= _size_filled)
 				{
 					size_type i = _size_filled;
@@ -252,24 +227,23 @@ namespace ft
 						n++;
 					}
 				}
-				else if (_size_alloc > n)
+
+				if (_size_alloc > n)
 				{
+					
 					// alloc = 10 et n =  5 alloc trop grande
 
-					T tmp[_size_alloc];
-					size_type tmp_size = _size_alloc;
-					for (size_type i = 0; i < _size_alloc - 1; i++)
+					T tmp[_size_filled + 1];
+					size_type tmp_size = _size_filled;
+					for (size_type i = 0; i < _size_filled; i++)
 						tmp[i] = _array[i];
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					_size_alloc = n + 1;
+					_size_alloc = _size_filled + 1;
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 					for (size_type i = 0; i < tmp_size; i++)
 						_array[i] = tmp[i];
-					for (size_type i = tmp_size ; i < _size_alloc - 1; i++)
-						_array[i] = tmp[i];
-					_size_filled = n;
 				}
-				else
+				else if (_size_alloc < n)
 				{   // size_alloc = 4 et n= 10
 					T tmp[_size_alloc + n]; // on fait un vecto temp avec la bonne taille
 					for (size_type i = 0; i < _size_alloc; i++)
@@ -302,29 +276,26 @@ namespace ft
 			//n => la taille demandé du futur array
 			void			reserve (size_type n)
 			{
-				// std::cout << "reserve 0" <<std::endl;
-				if (n > max_size())
-					throw vector::length_error();
-				
-				if (_size_alloc < n)
+				if (n > max_size() || (n * 2) + _size_alloc > max_size())
+					throw std::length_error::exception();
+				// [1,2,3,4,5] n = 5 alloc = 6
+				if (_size_alloc == 0)
+				{
+					_size_alloc = n + 1;
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				}
+				else
 				{
 					//realoue plus grand
-					T			tmp[_size_filled + n + 1];
-					size_type	old_size;
-					old_size = _size_alloc;
-					if (_size_alloc != 0)
-					{
-						for (size_type i = 0; i < _size_filled ; i++)
-							tmp[i] = _array[i];
-						_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
-					}
-					_size_alloc = _size_filled + n + 1;
+					T			tmp[_size_alloc];	
+					for (size_type i = 0; i < _size_filled ; i++)
+						tmp[i] = _array[i];
+					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
+					
+					_size_alloc = (n * 2) + _size_alloc;
 					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
-					if (old_size != 0)
-					{
-						for (size_type i = 0; i < _size_alloc; i++)
-							_array[i] = tmp[i];
-					}
+					for (size_type i = 0; i < _size_filled; i++)
+						_array[i] = tmp[i];
 				}
 			};
 
@@ -332,17 +303,12 @@ namespace ft
 			// operator [] Élément d'accès Renvoie une référence à l'élément à la position n dans le vecteur
 			reference operator[] (size_type n)
 			{
-				if (n > _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range  
-			// ON NE DOIT PAS FAIRE LES VERIFICATION --> CHELOU
 				return (_array[n]);
 			};
 
 			// const operator []
 			const_reference operator[] (size_type n) const
 			{
-				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range 
 				return (_array[n]);
 			};
 
@@ -350,7 +316,7 @@ namespace ft
 			reference at (size_type n)
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range
+					throw std::out_of_range("vector");
 				return (_array[n]);
 			};
 
@@ -358,7 +324,7 @@ namespace ft
 			const_reference at (size_type n) const
 			{
 				if (n >= _size_filled || n < 0)
-					throw vector::OutOfRange(); // out of range 
+					throw std::out_of_range("vector");
 				return (_array[n]);
 			};
 
@@ -419,49 +385,55 @@ namespace ft
 		//push_back Ajoute un nouvel élément à la fin du vecteur, après son dernier élément actuel. Le contenu de val est copié (ou déplacé) vers le nouvel élément.
 			void push_back (const value_type& val)
 			{
-				// std::cout << "push back 0" <<std::endl;
-				// print_element();
+
 				if (_size_alloc == 0)
 				{
-					_size_alloc++;
-					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc + 1));
+					_size_alloc += 2;
+					_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 				}
-				else if (_size_alloc + 1 >= _size_filled) //Cela augmente effectivement la taille du conteneur de un, ce qui provoque une réallocation automatique de l'espace de stockage alloué si - et seulement si - la nouvelle taille de vecteur dépasse la capacité de vecteur actuelle.
-					reserve(_size_filled + 1);
-				// print_element();
-				// std::cout << "push back 1" <<std::endl;
+				else if (_size_alloc - 1 <= _size_filled) 
+					reserve(_size_alloc - 1);
 				_array[_size_filled] = val;
-				// std::cout << "push back 2" <<std::endl;
 				_size_filled++;
-				// print_element();
-				// print_vector();
-				// std::cout << "push back 3" <<std::endl;
+				
 			};
 
 		//pop_back Supprime le dernier élément du vecteur, réduisant ainsi la taille du conteneur d'une unité
 			void pop_back()
 			{
-				//std::cout << "pop back 0" <<std::endl;
 				_size_filled--;
 			};
 		
 		// insert insertion de new element dans le vecteur 
 			iterator insert (iterator position, const value_type& val)
 			{
-				iterator	it = position;
-				iterator	begin_index = begin();
-				size_t		position_size = 0;
-				size_t		end_size = 1;
 
+				if (position < begin())
+				{
+						reserve(1);
+						int tmp = _size_filled +1;
+						while (tmp-- > 0)
+						{
+							_array[tmp] = _array[tmp - 1];
+						}
+						_array[0] = 0;
+						_size_filled++;
+						return (position);
+				}
+
+				iterator begin_index = begin();
+				size_t position_size = 0;
+				size_t end_size = 1;
 				if (position == end())
 				{
 					push_back(val);
 					return (position);
 				}
-				reserve(_size_filled + 1);
-				for (iterator beg = begin(); beg != position; beg++)
+				reserve(1);
+				while (begin_index != position)
 				{
 					position_size++;
+					begin_index++;
 				}
 				begin_index = begin();
 				while (begin_index != end())
@@ -471,22 +443,44 @@ namespace ft
 				}
 				T tmp[_size_filled + 1];
 				for (size_t i = 0; i != position_size; i++)
-					tmp[i] = _array[i];
+						tmp[i] = _array[i];
 				tmp[position_size] = val;
-				for (size_t i = position_size; i != end_size; i++)
-					tmp[i] = _array[i];
+				for (size_t i = position_size + 1; i != end_size; i++)
+						tmp[i] = _array[i - 1];
 				_size_filled++;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
+				position = _array + position_size;
 				return(position);
 			};
 
     		void insert (iterator position, size_type n, const value_type& val)
 			{
-				iterator	it = position;
-				iterator	begin_index = begin();
+				//print_element();
+			 	// std::cout << "position= " << *position << std::endl;
+				// if (position < begin())
+				// {
+				// 		reserve(n);
+				// 		size_t tmp = (_size_filled + n);
+				// 		int i = _size_filled;
+				// 		_array[0] = 0;
+				// 		while (i-- >= 0)
+				// 		{
+				// 			_array[tmp--] = _array[i];
+				// 		}
+				// 		print_vector();
+				// 		print_element();
+				// 		return ;
+
+			
+				// }
+		//		COMPORTEMENT INDE
+
+
+				iterator it = position;
+				iterator begin_index = begin();
 				size_t		end_size = n;
-				size_t		position_size = 0;
+				size_t position_size = 0;
 
 				if (it == end())
 				{
@@ -506,11 +500,11 @@ namespace ft
 					end_size++;
 					begin_index++;
 				}
-				T tmp[n];
+				T tmp[n + _size_alloc];
 				for (size_type i = 0; i != position_size; i++)
 					tmp[i] = _array[i];
-				for (size_type y = position_size; y != n; y++)
-					tmp[y] = val;
+				for (size_type y = position_size; y != n + position_size; y++)
+						tmp[y] = val;
 				for (size_type y = position_size + n; y != end_size; y++)
 				{
 					tmp[y] = _array[position_size];
@@ -524,25 +518,23 @@ namespace ft
 		//ATTENTION METTRE STD EN FT
 		template <class InputIterator>
    			void insert (iterator position, InputIterator first, InputIterator last,
-			typename ft::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
+			 typename ft::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
 			{
 				size_t		count = 0;
-				size_t		t = 0;
-				iterator 	it = position;
 				InputIterator save = first;
 
 				while (save != last)
 				{
 					save++;
 					count++;
-					t++;
 				}
-				
-				// // cas 1 : vecteur vide ou on doit rajouter que a la fin : donc pushback
+				iterator begin_index = begin();
+				size_t		end_size = 0;
+				size_t position_size = 0;
+
+				// cas 2 on ajoute a la fin
 				if (position == end() || _size_filled == 0)
 				{
-					print_element();
-					print_vector();
 					while (first != last)
 					{
 						push_back(*first);
@@ -552,14 +544,28 @@ namespace ft
 				// cas 2 : rajouter en plein milieux 
 				else 
 				{
+
 					T tmp[_size_filled + count];
 					size_type y = 0;
-					reserve(count);
+					reserve(count);// enelever +size
 					_size_filled += count;
-					for (iterator i = begin(); i != it; i++)
-							tmp[y] = _array[y];
+					while (begin_index != position)
+					{
+						position_size++;
+						begin_index++;
+					}
+					begin_index = begin();
+					while (begin_index != end())
+					{
+						end_size++;
+						begin_index++;
+					}
+					for (size_t i = 0; i != position_size; i++)
+							tmp[y++] = _array[i];
 					while (first != last)
-							tmp[y] = *first++;
+							tmp[y++] = *first++;
+					for (size_t i = y; i != end_size; i++)
+							tmp[i] = _array[position_size++];
 					for (size_type i = 0; i < _size_filled; i++)
 						_array[i] = tmp[i];
 				}
@@ -568,7 +574,6 @@ namespace ft
 		// swap 
 			void swap (vector& x)
 			{
-			    // std::cout << "swap 0" << std::endl;
 				T		*tmp_array = x._array;
 				size_type	tmp_size_filled = x._size_filled;
 				size_type	tmp_size_alloc = x._size_alloc;
@@ -593,10 +598,15 @@ namespace ft
 			{
 				T		tmp[_size_filled - 1];
 				iterator save = begin();
+			//	iterator endz = end()-1;
+
 				int			j;
 				j = 0;
+				//print_vector();
+				//std::cout << "it = " << *save << " end = "<< *endz << std::endl;
 				for (iterator it = begin(); it < end(); it++)
 				{
+				//	std::cout << "tmp = "  << std::endl;
 					if (it != position)
 					{
 						tmp[j] = *it;
@@ -608,52 +618,54 @@ namespace ft
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-				return (save);
+
+
+			//	print_vector();
+				return (position);
 			};
 
 			//erase an range de first(inclu) a last(non inclu) 
 			iterator erase (iterator first, iterator last)
 			{
-				T		tmp[_size_filled - 1];
+				T		tmp[_size_filled];
 				iterator	it = begin();
 				iterator	save = begin();
+				iterator	_end = end();
 				int			j;
 				j = 0;
-				for (it = 0; it < end(); it++)
+				while (it != first)
 				{
-					if (it == first)
-					{
-						while (first != last && it != end())
-						{
-							first++;
-							it++;
-							_size_filled--;
-						}
-					}
-					tmp[j] = it;
-					j++;
+					tmp[j++] = *it;
+					it++;
+				}
+				while (it != last)
+					it++;
+				while (it != _end)
+				{
+					tmp[j++] = *it;
+					it++;
 				}
 				_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
+				_size_filled = j;
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
-				return (save);
+				return (first);
 			};
 
 			//clear suprimme tous les elements du tab
 			void clear()
 			{
-			//	print_element();
-			//	print_vector();
-
 				while(_size_filled > 0)
 				{
 					pop_back();
 				}
 				if (_size_alloc > 0)
+				{
 					_alloc.deallocate(_array, sizeof(T *) * _size_alloc);
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * 2));
 				_size_alloc = 2;
+				}
 			};
 			
 	};
@@ -665,17 +677,8 @@ namespace ft
 			bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
 				if (lhs.size() != rhs.size())
-					return (false);
-				typename ft::vector<T>::const_iterator first_lhs = lhs.begin();
-				typename ft::vector<T>::const_iterator first_rhs = rhs.begin();
-				while (first_lhs != lhs.end() && first_rhs != rhs.end())
-				{
-					if (first_lhs != first_rhs)
-						return (false);
-					first_lhs++;
-					first_rhs++;
-				}
-				return (true);
+					return false;
+				return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 			};
 		// relational operators !=
 		template <class T, class Alloc>
@@ -688,18 +691,9 @@ namespace ft
 		template <class T, class Alloc>
 			bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 			{
-				if (lhs == rhs)
-					return (false);
-				typename ft::vector<T>::const_iterator first_lhs = lhs.begin(); // on doit faire un template d'iterator
-				typename ft::vector<T>::const_iterator  first_rhs = rhs.begin();
-				while (first_lhs != lhs.end() && first_rhs != rhs.end())
-				{
-					first_lhs++;
-					first_rhs++;
-				}
-				if (first_lhs != lhs.end) // on regarde si on a reussi a aller a la fin du vecteur 
-					return (true); // si c'est pas le cas ca veut dire que rhs a terminé la boucle mais que lhs nn; donc elle est plus petite
-				return (false);
+
+				return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+
 			};
 		
 		// relational operators <=
@@ -708,7 +702,7 @@ namespace ft
 			{
 				if (lhs == rhs)
 					return (true);
-				return (!(lhs < rhs));
+				return (!(lhs > rhs));
 			};
 		
 		// relational operators >

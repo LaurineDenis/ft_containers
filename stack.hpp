@@ -7,21 +7,19 @@
 
 namespace ft
 {
-    template <class T, class Container = vector<T> > // je pense qu'a la place de deque faut mettre vector
+    template< typename T, typename Container = ft::vector<T> > // je pense qu'a la place de deque faut mettre vector
     class stack
     {
         public :
 
         //----------------DEFINE----------------
-            typedef	            Container                   container_type;
-            typedef	typename	Container<T>::value_type	value_type;
-			typedef	typename 	Container<T>::size_type	    size_type;
+            typedef T value_type;
+			typedef Container container_type;
+			typedef size_t size_type;
 
-
-        private :
+            container_type      _container;
 
         //---------------VALUES----------------
-            container_type      _container;
 
 
         public :
@@ -33,7 +31,7 @@ namespace ft
             {};
 
             // constructor by copy
-	        stack(stack const &src) : _cont(src._cont) 
+	        stack(stack const &src) : _container(src._cont) 
             {};
 
 			//destructeur
@@ -74,7 +72,7 @@ namespace ft
             //pop  on fait appel a pop_back de vector
             void pop() // Supprime l'élément au-dessus de la pile, réduisant ainsi sa taille de un.
             {
-                  _container.pop_back(val);
+                  _container.pop_back();
             }
     };
 
@@ -82,7 +80,7 @@ namespace ft
 
 		    //relational operators ==
             template <class T, class Container>
-                bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
+               bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
                 {
                     return (lhs._container == rhs._container);
                 };
@@ -105,27 +103,21 @@ namespace ft
             template <class T, class Container>
                 bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
                 {
-                    if (lhs._container == rhs._container)
-                        return (true);
-                    return (!(lhs._container < rhs._container));
+                    return (lhs._container <= rhs._container);
 			    };
 		
             //relational operators >
             template <class T, class Container>
                 bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
                 {
-				    if (lhs._container == rhs._container)
-				    	return (false);
-				    return (!(lhs._container < rhs._container));
+				    return (lhs._container > rhs._container);
 			    };
                
             //relational operators >=
             template <class T, class Container>
                 bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs)
                 {
-				    if (lhs._container == rhs._container)
-					    return (true);
-				    return (!(lhs._container < rhs._container));
+				    return (lhs._container >= rhs._container);
 			    };
 }
 

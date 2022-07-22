@@ -7,9 +7,10 @@
 # include <utility>
 # include <cstddef>
 # include <iostream>
-# include "utils.hpp"
+// # include "utils.hpp"
 # include "node_map.hpp"
 # include "iterator_map.hpp"
+# include "iterator.hpp"
 
 # include <stdio.h>
 
@@ -26,7 +27,7 @@ namespace ft
 			// typedef value_type 									pair; //=>value_type
 			typedef Compare 									key_compare;
 			typedef Alloc 										allocator_type;
-			typedef Node<mapped_type>							m_node; //=> map_node
+			typedef Node<value_type>							m_node; //=> map_node
 			typedef std::allocator<m_node>						m_node_alloc;
 			typedef std::ptrdiff_t 								difference_type;
 			typedef size_t 										size_type;
@@ -50,14 +51,16 @@ namespace ft
 			m_node			*_begin;
 			size_type		_size;
 
-			template <class Key, class T, class Compare, class Alloc>
-			class map<Key,T,Compare,Alloc>::value_compare
+		public :
+
+			class value_compare
 			{
 				friend class map;
 				protected:
 
 					Compare						comp;
-					value_compare (Compare c) :	comp(c) {};
+					value_compare (Compare c) :	comp(c)
+					{};
 
 				public:
 				
@@ -70,7 +73,6 @@ namespace ft
 					};
 			};
 
-		public :
 
 			//contructor and destructor
 
@@ -126,7 +128,7 @@ namespace ft
 				_alloc = x._alloc;
 				_node_alloc = x._node_alloc;
 				insert(x.begin(), x.end());
-				return (this);
+				return (*this);
 			};
 
 			//iterators
@@ -183,7 +185,6 @@ namespace ft
 				return (value_compare(_compare));
 			};
 
-
 			//capacity
 
 			bool empty() const
@@ -213,7 +214,7 @@ namespace ft
 
 			//Modifiers
 
-			value_type<iterator, bool> insert(const value_type &value)
+			pair<iterator, bool> insert(const value_type &value)
 			{
 				//Si arbre vide on créer le 1er maillon
 				if (_root == NULL)
@@ -236,16 +237,16 @@ namespace ft
 				m_node	*new_node = _node_alloc.allocate(1);
 				_node_alloc.construct(new_node, m_node(value));
 				//détermine si on part du début ou de la fin de l'arbre selon la valeur
-				if (_compare(_end->top, value))
-					node = end->top;
-				else if (!_compare(_begin->top, value))
+				if (_compare(_end->top->node.first, value.first))
+					node = _end->top;
+				else if (!_compare(_begin->top->node.first, value.first))
 					node = _begin->top;
 				else
 					node = _root;
 				//On parcours l'arbre jusqu'au presque bout pour savoir ou l'on va placer le nouveau maillon
 				while (node->left || node->right)
 				{
-					if (_compare(node->value, value))
+					if (_compare(node->node.first, value.first))
 					{
 						if (node->right && node->right != _end)
 							node = node->right;
@@ -261,7 +262,7 @@ namespace ft
 					}
 				}
 				new_node->top = node;
-				if (_compare(node->value, value))
+				if (_compare(node->node.first, value.first))
 				{
 					new_node->right = node->right;
 					if (new_node->right)
@@ -279,8 +280,8 @@ namespace ft
 				}
 				_size++;
 				if (_size > 2)
-					balance(new_node);
-				return (ft::make_pair(new_node, true));
+					balance_tree(new_node);
+				return ft::make_pair(iterator(new_node), true);
 			};
 
 			iterator insert (iterator position, const value_type& val)
@@ -510,7 +511,7 @@ namespace ft
 				{
 					if (node->node.first == k)
 						return (node);
-					if (_compare(node->node, make_pair(k, mapped_type())))
+					if (_compare(node->node.first, k))
 						node = node->right;
 					else
 						node = node->left;
@@ -529,7 +530,7 @@ namespace ft
 				{
 					if (node->node.first == k)
 						return (node);
-					if (_compare(node->node, make_pair(k, mapped_type())))
+					if (_compare(node->node.first, k))
 						node = node->right;
 					else
 						node = node->left;
@@ -551,7 +552,7 @@ namespace ft
 			{
 				for (iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, make_pair(k, mapped_type())))
+					if (!_compare(iter->first, k))
 						return (iter);
 				}
 				return (end());
@@ -561,7 +562,7 @@ namespace ft
 			{
 				for (const_iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, make_pair(k, mapped_type())))
+					if (!_compare(iter->first, k))
 						return (iter);
 				}
 				return (end());
@@ -571,7 +572,7 @@ namespace ft
 			{
 				for (iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, make_pair(k, mapped_type())))
+					if (!_compare(iter->first, k))
 						return (iter);
 				}
 				return (end());
@@ -581,7 +582,7 @@ namespace ft
 			{
 				for (const_iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, make_pair(k, mapped_type())))
+					if (!_compare(iter->first, k))
 						return (iter);
 				}
 				return (end());

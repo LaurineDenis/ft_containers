@@ -1,20 +1,57 @@
 #ifndef UTILS_HPP
-#define UTILS_HPP
+#define	UTILS_HPP
 
-namespace ft
-{
-	template<bool, class T = void>
+#include "iterator_traits.hpp"
+#include <algorithm>
+#include <iostream>
+
+namespace ft {
+
+	template<bool Cond, class T = void>
 	struct enable_if {};
-	
-	template<class T>
-	struct enable_if<true, T> { typedef T type; };
 
-	template <typename Tkey, typename Tvalue>
+	template<class T>
+	struct enable_if<true, T>
+	{
+		typedef T type;
+	};
+
+	template <class T> struct is_integral : public std::false_type {};
+	template <> struct is_integral<bool> : public std::true_type {};
+	template <> struct is_integral<char> : public std::true_type {};
+	template <> struct is_integral<signed char> : public std::true_type {};
+	template <> struct is_integral<unsigned char> : public std::true_type {};
+	template <> struct is_integral<wchar_t> : public std::true_type {};
+	template <> struct is_integral<char16_t> : public std::true_type {};
+	template <> struct is_integral<char32_t> : public std::true_type {};
+	template <> struct is_integral<short> : public std::true_type {};
+	template <> struct is_integral<unsigned short> : public std::true_type {};
+	template <> struct is_integral<int> : public std::true_type {};
+	template <> struct is_integral<unsigned int> : public std::true_type {};
+	template <> struct is_integral<long> : public std::true_type {};
+	template <> struct is_integral<unsigned long> : public std::true_type {};
+	template <> struct is_integral<long long> : public std::true_type {};
+	template <> struct is_integral<unsigned long long> : public std::true_type {};
+	template <> struct is_integral<__int128_t> : public std::true_type {};
+	template <> struct is_integral<__uint128_t> : public std::true_type {};
+
+	template <class Iter>
+	typename ft::iterator_traits<Iter>::difference_type	distance(Iter first, Iter last) {
+		typename ft::iterator_traits<Iter>::difference_type ret = 0;
+		while (first != last) {
+			ret++;
+			first++;
+		}
+		return ret;
+	}
+
+template <typename Tkey, typename Tvalue>
 	class pair
 	{
 		public:
 
-			pair(void) {};
+			pair(void) : first(), second()
+			{};
 
 			pair (const pair<Tkey,Tvalue>& pr) : first(pr.first), second(pr.second)
 			{};
@@ -114,5 +151,6 @@ namespace ft
 		return (first2 != last2);
 	}
 }
+
 
 #endif

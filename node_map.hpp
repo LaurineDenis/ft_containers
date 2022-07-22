@@ -25,18 +25,10 @@ namespace ft
 			Node				*top;
 			int					height;
 
-			Node() : left(NULL), right(NULL), top(nullptr), height(1) 
+			Node() : left(NULL), right(NULL), top(NULL), height(1), node()
 			{};
 
-			Node(Node<T> const &src) : node(src.node)
-			{
-				left = src.left;
-				right = src.right;
-				height = src.height;
-				top = src.top;
-			};
-
-			Node(T const &pair) : node(pair)
+			Node(const T &pair) : node(pair)
 			{
 				left = NULL;
 				right = NULL;
@@ -44,9 +36,17 @@ namespace ft
 				height = 1;
 			};
 
+			Node(Node const &src) : node(src.node)
+			{
+				left = src.left;
+				right = src.right;
+				height = src.height;
+				top = src.top;
+			};
+
 			~Node();
 
-			Node<T>	&operator=(Node<T> const &rhs)
+			Node	&operator=(Node const &rhs)
 			{
 				if (this != &rhs)
 				{
@@ -58,14 +58,14 @@ namespace ft
 				return *this;
 			};
 
-			bool	operator==(Node<T> const &rhs)
+			bool	operator==(Node const &rhs)
 			{
 				if (left == rhs.left && right == rhs.right && top == rhs.top && height == rhs.height)
 					return true;
 				return false;
 			};
 
-			bool	operator!=(Node<T> const &rhs)
+			bool	operator!=(Node const &rhs)
 			{
 				if (left == rhs.left && right == rhs.right && top == rhs.top && height == rhs.height)
 					return false;
