@@ -1,55 +1,57 @@
-#include "common.hpp"
+//#include "common.hpp"
 
 #include <list>
+# include "vector.hpp"
 
 
-// void print(std::vector<TESTED_TYPE> const &input)
-// {
-// 	for (size_t i =0; i < input.size() ; i++)
-// 	{
-// 		std::cout << input.at(i)<< ' '<< std::endl;
-
-// 	}
-// }
-
-#define TESTED_TYPE std::string
-
-void	checkErase(ft::vector<TESTED_TYPE> const &vct,
-					ft::vector<TESTED_TYPE>::const_iterator const &it)
+void print(std::vector<int> const &input)
 {
-	std::cout << "it = " << *it<< std::endl;
-	static int i = 0;
-	std::cout << "[" << i++ << "] " << "erase: " << it - vct.begin() << std::endl;
-	printSize(vct);
+	std::cout << "---------STD--------" << std::endl;
+	for (size_t i =0; i < input.size() ; i++)
+	{
+		std::cout << input.at(i)<< ' '<< std::endl;
+
+	}
 }
 
 int		main(void)
-{
-	ft::vector<TESTED_TYPE> vct(10);
+{	
+	const int size = 7;
+	std::cout << "---------FT--------" << std::endl;
+	ft::vector<int> vct(size);
+	ft::vector<int> vct_two(4);
+	
+	std::vector<int> vct_std(size);
+	std::vector<int> vct_two_std(4);
+
 
 	for (unsigned long int i = 0; i < vct.size(); ++i)
-		vct[i] = std::string((vct.size() - i), i + 65);
-	printSize(vct);
+		vct[i] = (vct.size() - i) * 3;
+	for (unsigned long int i = 0; i < vct_two.size(); ++i)
+		vct_two[i] = (vct_two.size() - i) * 5;
 
-	checkErase(vct, vct.erase(vct.begin()));
+	
+	for (unsigned long int i = 0; i < vct_std.size(); ++i)
+		vct_std[i] = (vct_std.size() - i) * 3;
+	for (unsigned long int i = 0; i < vct_two_std.size(); ++i)
+		vct_two_std[i] = (vct_two_std.size() - i) * 5;
+	
+	vct.print_vector();
+	print(vct_std);
 
-	checkErase(vct, vct.erase(vct.begin()));
-	checkErase(vct, vct.erase(vct.end() - 1));
+	vct_two.print_vector();
+	print(vct_two_std);
 
-	checkErase(vct, vct.erase(vct.begin(), vct.begin() + 3));
-	checkErase(vct, vct.erase(vct.end() - 3, vct.end() - 1));
+	std::cout << "---------ASSIGN-01-------" << std::endl;
 
-	vct.push_back("Hello");
-	vct.push_back("Hi there");
-	printSize(vct);
-	checkErase(vct, vct.erase(vct.end() - 3, vct.end()));
+	vct_two.assign(vct.begin(), vct.end());
+	vct_two_std.assign(vct_std.begin(), vct_std.end());
+	vct_two.print_vector();
+	print(vct_two_std);
 
-	vct.push_back("ONE");
-	vct.push_back("TWO");
-	vct.push_back("THREE");
-	vct.push_back("FOUR");
-	printSize(vct);
-	checkErase(vct, vct.erase(vct.begin(), vct.end()));
+	ft::vector<int>::iterator it(vct.begin());
+	ft::vector<int>::const_iterator ite(vct.end());
 
+	
 	return (0);
 }

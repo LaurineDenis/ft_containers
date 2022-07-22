@@ -33,19 +33,19 @@ namespace ft
 
 
 
-			typedef				ft::Iterator<T>					iterator;
-			typedef				ft::Iterator<T>					const_iterator;
-			typedef				ft::reverse_iterator<T>			reverse_iterator;
-			typedef				ft::reverse_iterator<T>			const_reverse_iterator;
-		//	typedef typename 	ft::iterator_traits<iterator>::difference_type	difference_type;
+		// 	typedef				ft::Iterator<T>					iterator;
+		// 	typedef				ft::Const_iterator<T>			const_iterator;
+		// 	typedef				ft::reverse_iterator<T>			reverse_iterator;
+		// 	typedef				ft::reverse_iterator<T>			const_reverse_iterator;
+		// //	typedef typename 	ft::iterator_traits<iterator>::difference_type	difference_type;
 			
 			
 			
 			
-			// typedef				VectorIterator<pointer>			iterator;
-			// typedef				VectorIterator<const_pointer>			const_iterator;
-			// typedef				ft::reverse_iterator<iterator>		reverse_iterator;
-			// typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+			typedef				iterator_vector<pointer>			iterator;
+			typedef				iterator_vector<const_pointer>			const_iterator;
+			typedef				ft::reverse_iterator<iterator>		reverse_iterator;
+			typedef				ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			
 		private :
 
@@ -153,13 +153,14 @@ namespace ft
 			// begin Renvoie un itérateur pointant vers le premier élément du vecteur.
 			iterator begin()
 			{
-				std::cout << "coucou: "<< *_array << std::endl;
+				//std::cout << "coucou: "<< *_array << std::endl;
 				return (iterator(_array));
 			};
 
 			// begin const
 			const_iterator begin() const
 			{
+
 				return (const_iterator(_array));
 			};
 
@@ -172,6 +173,7 @@ namespace ft
 			// end const
 			const_iterator end() const
 			{
+
 				return (const_iterator(_array + _size_filled));
 			};
 
@@ -596,10 +598,15 @@ namespace ft
 			{
 				T		tmp[_size_filled - 1];
 				iterator save = begin();
+			//	iterator endz = end()-1;
+
 				int			j;
 				j = 0;
+				//print_vector();
+				//std::cout << "it = " << *save << " end = "<< *endz << std::endl;
 				for (iterator it = begin(); it < end(); it++)
 				{
+				//	std::cout << "tmp = "  << std::endl;
 					if (it != position)
 					{
 						tmp[j] = *it;
@@ -611,6 +618,9 @@ namespace ft
 				_array = reinterpret_cast<T *>(_alloc.allocate(sizeof(T *) * _size_alloc));
 				for (size_type i = 0; i < _size_filled; i++)
 					_array[i] = tmp[i];
+
+
+			//	print_vector();
 				return (position);
 			};
 
