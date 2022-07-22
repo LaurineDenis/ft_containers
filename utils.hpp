@@ -16,12 +16,8 @@ namespace ft
 
 			pair(void) {};
 
-			template<class U, class V>
-			pair (const pair<U,V>& pr)
-			{
-				this->first = pr.first;
-				this->second = pr.second;
-			};
+			pair (const pair<Tkey,Tvalue>& pr) : first(pr.first), second(pr.second)
+			{};
 
 			pair (const Tkey& a, const Tvalue& b)
 			: first(a), second(b)

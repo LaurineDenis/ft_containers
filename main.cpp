@@ -1,45 +1,43 @@
 #include "common.hpp"
+#include <list>
 
-/*
-single element (1)
-	iterator insert (iterator position, const value_type& val);
+#define T1 char
+#define T2 int
+typedef _pair<const T1, T2> T3;
 
-fill (2)
-    void insert (iterator position, size_type n, const value_type& val);
-
-range (3)
-	template <class InputIterator>
-		void insert (iterator position, InputIterator first, InputIterator last);
-*/
-
-#define TESTED_TYPE int
+template <class T>
+void	is_empty(T const &mp)
+{
+	std::cout << "is_empty: " << mp.empty() << std::endl;
+}
 
 int		main(void)
 {
-	ft::vector<TESTED_TYPE> vct(10);
-	ft::vector<TESTED_TYPE> vct2;
+	std::list<T3> lst;
+	unsigned int lst_size = 7;
+	for (unsigned int i = 0; i < lst_size; ++i)
+		lst.push_back(T3('a' + i, lst_size - i));
 
-	for (unsigned long int i = 0; i < vct.size(); ++i)
-		vct[i] = (vct.size() - i) * 3;
-	printSize(vct);
+	TESTED_NAMESPACE::map<T1, T2> mp(lst.begin(), lst.end()), mp2;
+	TESTED_NAMESPACE::map<T1, T2>::iterator it;
 
-	vct2.insert(vct2.end(), 42);
-	vct2.insert(vct2.begin(), 2, 21);
-	printSize(vct2);
+	lst.clear();
+	is_empty(mp);
+	printSize(mp);
 
-	vct2.insert(vct2.end() - 2, 42);
-	printSize(vct2);
+	is_empty(mp2);
+	mp2 = mp;
+	is_empty(mp2);
 
-	vct2.insert(vct2.end(), 2, 84);
-	printSize(vct2);
+	it = mp.begin();
+	for (unsigned long int i = 3; i < mp.size(); ++i)
+		it++->second = i * 7;
 
-	vct2.resize(4);
-	printSize(vct2);
+	printSize(mp);
+	printSize(mp2);
 
-	vct2.insert(vct2.begin() + 2, vct.begin(), vct.end());
-	vct.clear();
-	printSize(vct2);
-
-	printSize(vct);
+	mp2.clear();
+	is_empty(mp2);
+	printSize(mp2);
 	return (0);
 }
