@@ -1,5 +1,5 @@
-#ifndef ITERATOR_VECTOR_HPP
-#define ITERATOR_VECTOR_HPP
+#ifndef ITERATOR_HPP
+#define ITERATOR_HPP
 
 #include "iterator_traits.hpp"
 

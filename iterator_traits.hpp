@@ -1,8 +1,6 @@
 #ifndef ITERATOR_TRAITS_HPP
 #define ITERATOR_TRAITS_HPP
 
-//#include <iterator>
-
 namespace ft {
     template <class Iter>
 	struct iterator_traits

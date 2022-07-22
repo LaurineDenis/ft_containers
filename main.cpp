@@ -18,7 +18,9 @@ int		main(void)
 	for (unsigned int i = 0; i < lst_size; ++i)
 		lst.push_back(T3('a' + i, lst_size - i));
 
+	std::cout << "Before " << std::endl;
 	TESTED_NAMESPACE::map<T1, T2> mp(lst.begin(), lst.end()), mp2;
+	std::cout << "after creation 1" << std::endl;
 	TESTED_NAMESPACE::map<T1, T2>::iterator it;
 
 	lst.clear();

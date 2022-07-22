@@ -1,8 +1,6 @@
 #ifndef ITERATOR_MAP_HPP
 #define ITERATOR_MAP_HPP
 
-#include "node_map.hpp"
-
 namespace ft
 {
     template <class iter, class T>
@@ -14,6 +12,7 @@ namespace ft
 			typedef std::ptrdiff_t  					difference_type;
 			typedef T*   								pointer;
 			typedef T& 									reference;
+			typedef std::bidirectional_iterator_tag		iterator_category;
 		
 		protected:
 
@@ -76,12 +75,12 @@ namespace ft
 
 			reference operator*() const
 			{
-				return (_ptr->node);
+				return (_ptr->value);
 			};
 
 			pointer operator->() const
 			{
-				return (&_ptr->node);
+				return (&_ptr->value);
 			};
 
             //-------------BOOLEANS -----------
@@ -102,10 +101,11 @@ namespace ft
 	class const_iterator_map
 	{
 		public:
-			typedef iter							value_type;
-			typedef std::ptrdiff_t					difference_type;
-			typedef T*								pointer;
-			typedef T& 								reference;
+			typedef iter								value_type;
+			typedef std::ptrdiff_t						difference_type;
+			typedef T*									pointer;
+			typedef T& 									reference;
+			typedef std::bidirectional_iterator_tag		iterator_category;
 			
 		protected:
 			value_type		*_ptr;
@@ -177,12 +177,12 @@ namespace ft
 			//-------------REFERENCE & POINTEUR -----------
 			reference operator*() const
 			{
-				return (_ptr->node);
+				return (_ptr->value);
 			};
 
 			const pointer operator->() const
 			{
-				return (&_ptr->node);
+				return (&_ptr->value);
 			};
 
 			//-------------BOOLEANS -----------

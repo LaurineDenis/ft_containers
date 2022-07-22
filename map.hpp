@@ -7,10 +7,11 @@
 # include <utility>
 # include <cstddef>
 # include <iostream>
-// # include "utils.hpp"
-# include "node_map.hpp"
+# include "node.hpp"
+# include "utils.hpp"
 # include "iterator_map.hpp"
 # include "iterator.hpp"
+# include "pair.hpp"
 
 # include <stdio.h>
 
@@ -24,11 +25,10 @@ namespace ft
 			typedef Key 										key_type;
 			typedef T 											mapped_type;
 			typedef ft::pair<const key_type,mapped_type> 		value_type;
-			// typedef value_type 									pair; //=>value_type
 			typedef Compare 									key_compare;
 			typedef Alloc 										allocator_type;
-			typedef Node<value_type>							m_node; //=> map_node
-			typedef std::allocator<m_node>						m_node_alloc;
+			typedef Node<value_type>							m_node;
+			// typedef std::allocator<m_node>						m_node_alloc;
 			typedef std::ptrdiff_t 								difference_type;
 			typedef size_t 										size_type;
 			typedef typename allocator_type::reference 				reference;
@@ -56,29 +56,32 @@ namespace ft
 			class value_compare
 			{
 				friend class map;
+
 				protected:
 
-					Compare						comp;
-					value_compare (Compare c) :	comp(c)
-					{};
+					Compare comp;
+					value_compare(Compare c): comp(c)
+					{}
 
 				public:
-				
-					typedef bool		result_type;
-					typedef	value_type	first_argument_type;
-					typedef value_type	second_argument_type;
-					bool operator() (const value_type& x, const value_type& y) const
+
+					typedef bool result_type;
+					typedef value_type first_argument_type;
+					typedef value_type second_argument_type;
+
+					bool operator()(const value_type &x, const value_type &y) const
 					{
-						return comp(x.first, y.first);
-					};
+						return (comp(x.first, y.first));
+					}
 			};
 
 
 			//contructor and destructor
 
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : 
-			 _compare(comp), _alloc(alloc), _node_alloc(m_node_alloc()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
+			 _compare(comp), _alloc(alloc), _node_alloc(std::allocator<m_node>()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
 			{
+				std::cout << "Constructor 1 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
@@ -88,8 +91,9 @@ namespace ft
 			
 			template <class InputIterator>
 			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) :
-			 _compare(comp), _alloc(alloc), _node_alloc(m_node_alloc()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
+			 _compare(comp), _alloc(alloc), _node_alloc(std::allocator<m_node>()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
 			{
+				std::cout << "Constructor 2 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
@@ -101,6 +105,7 @@ namespace ft
 			map (const map& x) : 
 			_compare(x._compare), _alloc(x._alloc), _node_alloc(x._node_alloc), _root(NULL), _size(0)
 			{
+				std::cout << "Constructor 3 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
@@ -216,6 +221,7 @@ namespace ft
 
 			pair<iterator, bool> insert(const value_type &value)
 			{
+				std::cout << "Insert normal " << std::endl;
 				//Si arbre vide on créer le 1er maillon
 				if (_root == NULL)
 				{
@@ -232,21 +238,22 @@ namespace ft
 				iterator it = this->find(value.first);
 				if (it != this->end())
 					return (ft::make_pair(it, false));
-				
+				std::cout << "Insert : apres find " << std::endl;
 				m_node	*node;
 				m_node	*new_node = _node_alloc.allocate(1);
 				_node_alloc.construct(new_node, m_node(value));
 				//détermine si on part du début ou de la fin de l'arbre selon la valeur
-				if (_compare(_end->top->node.first, value.first))
+				if (_compare(_end->top->value.first, value.first))
 					node = _end->top;
-				else if (!_compare(_begin->top->node.first, value.first))
+				else if (!_compare(_begin->top->value.first, value.first))
 					node = _begin->top;
 				else
 					node = _root;
 				//On parcours l'arbre jusqu'au presque bout pour savoir ou l'on va placer le nouveau maillon
+				std::cout << "Insert : avant recherche " << std::endl;
 				while (node->left || node->right)
 				{
-					if (_compare(node->node.first, value.first))
+					if (_compare(node->value.first, value.first))
 					{
 						if (node->right && node->right != _end)
 							node = node->right;
@@ -261,8 +268,9 @@ namespace ft
 							break ;
 					}
 				}
+				std::cout << "Insert : apres recherche " << std::endl;
 				new_node->top = node;
-				if (_compare(node->node.first, value.first))
+				if (_compare(node->value.first, value.first))
 				{
 					new_node->right = node->right;
 					if (new_node->right)
@@ -279,20 +287,25 @@ namespace ft
 					node->left = new_node;
 				}
 				_size++;
+				std::cout << "Insert : apres find " << std::endl;
+				std::cout << "Insert : size : " << _size << std::endl;
 				if (_size > 2)
-					balance_tree(new_node);
-				return ft::make_pair(iterator(new_node), true);
+					rebalance(new_node);
+				std::cout << "Insert : apres balance " << std::endl;
+				return (ft::make_pair(iterator(new_node), true));
 			};
 
 			iterator insert (iterator position, const value_type& val)
 			{
 				(void)position;
+				std::cout << "Insert position " << std::endl;
 				return (insert(val).first);
 			};
 
 			template <class InputIterator>
 			void insert (InputIterator first, InputIterator last)
 			{
+				std::cout << "Insert iterator " << std::endl;
 				while (first != last)
 				{
 					insert(*first);
@@ -302,15 +315,18 @@ namespace ft
 
 			void erase(iterator position)
 			{
+				std::cout << "Erase" <<std::endl;
 				m_node	*pos = position.get_internal_pointer();
 				m_node	*tmp;
 				m_node	*toBalance;
 
 				if (!pos->right || !pos->left)
 				{
+					std::cout << "Erase : cas 1" <<std::endl;
 					// A verifier si possible ? car root a toujours un droite et un gauche car c'est begin et end ?????
 					if (pos == _root)
 					{
+						std::cout << "Erase : cas 1.1" <<std::endl;
 						if (pos->right)
 						{
 							pos->right->top = NULL;
@@ -329,6 +345,7 @@ namespace ft
 					}
 					else if (pos->top->right == pos)
 					{
+						std::cout << "Erase : cas 1.2" <<std::endl;
 						if (pos->right)
 							pos->top->right = pos->right;
 						else if (pos->left)
@@ -338,6 +355,7 @@ namespace ft
 					}
 					else
 					{
+						std::cout << "Erase : cas 1.3" <<std::endl;
 						if (pos->right)
 							pos->top->left = pos->right;
 						else if (pos->left)
@@ -353,6 +371,7 @@ namespace ft
 				}
 				else
 				{
+					std::cout << "Erase : cas 2" <<std::endl;
 					if (pos == _root)
 					{
 						if (pos->right != _end || pos->left != _begin)
@@ -380,60 +399,61 @@ namespace ft
 						// if (p->right != _end)
 						// {
 							// tmp = p->findMin(p->right);
-							// if (tmp->parent != p)
-							// 	toBalance = tmp->parent;
+							// if (tmp->top != p)
+							// 	toBalance = tmp->top;
 							// else
 							// 	toBalance = tmp;
 							// tmp->left = p->left;
-							// p->left->parent = tmp;
+							// p->left->top = tmp;
 							// if (tmp != p->right)
 							// {
 							// 	tmp->right = p->right;
-							// 	p->right->parent = tmp;
+							// 	p->right->top = tmp;
 							// }
-							// if (tmp->parent)
+							// if (tmp->top)
 							// {
-							// 	if (tmp->parent->left == tmp)
-							// 		tmp->parent->left = NULL;
+							// 	if (tmp->top->left == tmp)
+							// 		tmp->top->left = NULL;
 							// 	else
-							// 		tmp->parent->right = NULL;
+							// 		tmp->top->right = NULL;
 							// }
-							// tmp->parent = NULL;
+							// tmp->top = NULL;
 							// _root = tmp;
 						// }
 						// else if (p->left != _begin)
 						// {
-							// p->left->parent = NULL;
+							// p->left->top = NULL;
 							// tmp = p->findMax(p->left);
-							// if (tmp->parent != p)
-							// 	toBalance = tmp->parent;
+							// if (tmp->top != p)
+							// 	toBalance = tmp->top;
 							// else
 							// 	toBalance = tmp;
 							// tmp->left = p->left;
-							// if (p->right->parent)
-							// 	p->right->parent = tmp;
+							// if (p->right->top)
+							// 	p->right->top = tmp;
 							// tmp->right = p->right;
 							// if (p->left)
-							// 	p->left->parent = tmp;
-							// if (tmp->parent)
+							// 	p->left->top = tmp;
+							// if (tmp->top)
 							// {
-							// 	if (tmp->parent->left == tmp)
-							// 		tmp->parent->left = NULL;
+							// 	if (tmp->top->left == tmp)
+							// 		tmp->top->left = NULL;
 							// 	else
-							// 		tmp->parent->right = NULL;
+							// 		tmp->top->right = NULL;
 							// }
-							// tmp->parent = NULL;
+							// tmp->top = NULL;
 							// _root = tmp;
 						// }
 						// else
 						// {
-						// 	_begin->parent = _end;
+						// 	_begin->top = _end;
 						// 	_end->left = _begin;
 						// 	_root = NULL;
 						// }
 					}
 					else
 					{
+						std::cout << "Erase : cas 3" <<std::endl;
 						pos->top->left = pos->right;
 						pos->right->top = pos->top;
 						m_node	*tmp = pos->find_min(pos->right);
@@ -509,9 +529,9 @@ namespace ft
 				node = _root;
 				while (node && node != _end && node != _begin)
 				{
-					if (node->node.first == k)
+					if (node->value.first == k)
 						return (node);
-					if (_compare(node->node.first, k))
+					if (_compare(node->value.first, k))
 						node = node->right;
 					else
 						node = node->left;
@@ -590,12 +610,12 @@ namespace ft
 
 			pair<iterator, iterator> equal_range(const key_type &k)
 			{
-				return (make_pair(iterator::lower_bound(k), iterator::upper_bound(k)));
+				return (make_pair(lower_bound(k), upper_bound(k)));
 			};
 
 			pair<const_iterator,const_iterator> equal_range (const key_type& k) const
 			{
-				return (make_pair(const_iterator::lower_bound(k), const_iterator::upper_bound(k)));
+				return (make_pair(lower_bound(k), upper_bound(k)));
 			};
 
 			allocator_type get_allocator(void) const
@@ -607,20 +627,34 @@ namespace ft
 
 			m_node		*right_rotate(m_node *node)
 			{
-				if (node == NULL)
-					return (NULL);
-				m_node		*tmp;
-				if (node->left != NULL)
-					tmp = node->left;
-				if (tmp->right != NULL)
+				std::cout << "right rotate" <<std::endl;
+				m_node *tmp = node->left;
+				if (tmp != NULL)
 				{
-					node->left = tmp->right;
-					tmp->right->top = node;
+					if (tmp->right)
+					{
+						node->left = tmp->right;
+						tmp->right->top = node;
+					}
+					else
+						node->left = NULL;
+					tmp->right = node;
+					if (node->top)
+					{
+						if (node->top->left == node)
+							node->top->left = tmp;
+						else
+							node->top->right = tmp;
+					}
+					else
+						tmp->top = NULL;
+					tmp->top = node->top;
+					node->top = tmp;
+					if (_root == node)
+						_root = tmp;
 				}
-				tmp->right = node;
-				node->top = tmp;
-				if (node == _root)
-					_root = tmp;
+				else
+					node->left = NULL;
 				set_height(node);
 				set_height(tmp);
 				return (tmp);
@@ -628,20 +662,34 @@ namespace ft
 
 			m_node		*left_rotate(m_node *node)
 			{
-				if (node == NULL)
-					return (NULL);
-				m_node		*tmp;
-				if (node->right != NULL)
-					tmp = node->right;
-				if (tmp->left != NULL)
+				std::cout << "left rotate" <<std::endl;
+				m_node *tmp = node->right;
+				if (tmp != NULL)
 				{
-					node->right = tmp->left;
-					tmp->left->top = node;
+					if (tmp->left)
+					{
+						node->right = tmp->left;
+						tmp->left->top = node;
+					}
+					else
+						node->right = NULL;
+					tmp->left = node;
+					if (node->top)
+					{
+						if (node->top->left == node)
+							node->top->left = tmp;
+						else
+							node->top->right = tmp;
+					}
+					else
+						tmp->top = NULL;
+					tmp->top = node->top;
+					node->top = tmp;
+					if (_root == node)
+						_root = tmp;
 				}
-				tmp->left = node;
-				node->top = tmp;
-				if (node == _root)
-					_root = tmp;
+				else
+					node->right = NULL;
 				set_height(node);
 				set_height(tmp);
 				return (tmp);
@@ -662,15 +710,37 @@ namespace ft
 				node->height = std::max(size_left, size_right) + 1;
 			}
 
-			int			getBalanceFactor(m_node *root)
+			int			getBalanceFactor(m_node *node)
 			{
-				if (root == NULL)
-					return (0);
-				return (root->left->height - root->right->height);
+				std::cout << "balance factor" <<std::endl;
+				return (retHeight(node->right) - retHeight(node->left));
 			};
+
+			int retHeight(m_node *node)
+			{
+				if (node != NULL && node != _begin && node != _end)
+					return (node->height);
+				return (-1);
+			};
+
+			void rebalance(m_node *node)
+			{
+				if (node == NULL)
+					return ;
+				std::cout << "Rebalance" <<std::endl;
+				while (node->top)
+				{
+					set_height(node);
+					balance_tree(node);
+					node = node->top;
+				}
+				set_height(node);
+				balance_tree(node);
+			}
 
 			m_node		*balance_tree(m_node *node)
 			{
+				std::cout << "balance tree" <<std::endl;
 				m_node		*ret;
 				int bf = getBalanceFactor(node);
 				if (bf < -1)
@@ -695,6 +765,7 @@ namespace ft
 				}
 				return (ret);
 			};
+
 	};
 }
 
