@@ -141,6 +141,14 @@ namespace ft
 				}
 			};
 
+			void			print_vector_const() const
+			{
+				for (size_type i = 0; i < _size_filled; i++)
+				{
+					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
+				}
+			};
+
 			//print
 			void			print_element()
 			{

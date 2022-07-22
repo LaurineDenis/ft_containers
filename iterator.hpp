@@ -96,7 +96,8 @@ namespace ft
 
 			iterator_vector&	operator-=(difference_type n)
 			{
-				_ptr -= n;
+                if (_ptr != 0)
+				    _ptr -= n;
 				return (*this);
 			};
 
@@ -260,8 +261,11 @@ namespace ft
 
 			reverse_iterator& operator-=(difference_type n)
 			{
-				this->_ptr = this->_ptr + n;
+                // std::cout << "_pts = " << *_ptr+n << std::endl;
+          
+				this->_ptr +=  n;
 				return (*this);
+
 			};
 
 
