@@ -179,22 +179,28 @@ int		main(void)
 
 	std::cout << "---------INSERT 1 element------" << std::endl;
 	
-
 	vct_two.print_vector();
 	print(vct_two_std);
+
+
 	vct_two.insert(vct_two.end()-3, 10000);
 	vct_two_std.insert(vct_two_std.end()-3, 10000);
 	vct_two.print_vector();
 	print(vct_two_std);
 
-	std::cout << "---------INSERT une plage------" << std::endl;
+
+std::cout << "---------INSERT une plage------" << std::endl;
+
 
 	vct.print_vector();
 	print(vct_std);
+
 	vct.insert(vct.end()-1, 5, 66);
 	vct_std.insert(vct_std.end()-1, 5, 66);
 	vct.print_vector();
 	print(vct_std);
+	
+	vct.print_element();
 
 	std::cout << "---------INSERT avec iterator------" << std::endl;
 	
@@ -202,7 +208,7 @@ int		main(void)
 	vct_std.insert(vct_std.begin() + 2, vct_std.begin(), vct_std.end());
 	vct.print_vector();
 	print(vct_std);
-
+	vct.print_element();
 
 	std::cout << "---------ITE ARROW------" << std::endl;
 
