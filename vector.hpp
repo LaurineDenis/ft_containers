@@ -560,10 +560,7 @@ namespace ft
 					
 					save = first;
 					while(save != last)
-					{
 						tmp2[k++] = *save++;
-						
-					}
 					k = 0;
 
 					reserve(count);// enelever +size
@@ -582,9 +579,7 @@ namespace ft
 						begin_index++;
 					}
 					for (size_t i = 0; i != position_size; i++)
-					{
 						tmp[y++] = _array[i];
-					}
 					while (first != last)
 					{
 						tmp[y] = tmp2[k];
@@ -593,9 +588,7 @@ namespace ft
 						k++;
 					}
 					for (size_t i = y; i != end_size; i++)
-					{
 						tmp[i] = _array[position_size++];
-					}
 					for (size_type i = 0; i < _size_filled; i++)
 						_array[i] = tmp[i];
 				}
