@@ -81,7 +81,7 @@ namespace ft
 			explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) : 
 			 _compare(comp), _alloc(alloc), _node_alloc(std::allocator<m_node>()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
 			{
-				std::cout << "Constructor 1 " << std::endl;
+				// std::cout << "Constructor 1 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
@@ -93,7 +93,7 @@ namespace ft
 			map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) :
 			 _compare(comp), _alloc(alloc), _node_alloc(std::allocator<m_node>()), _root(NULL), _end(NULL), _begin(NULL), _size(0)
 			{
-				std::cout << "Constructor 2 " << std::endl;
+				// std::cout << "Constructor 2 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
@@ -105,13 +105,13 @@ namespace ft
 			map (const map& x) : 
 			_compare(x._compare), _alloc(x._alloc), _node_alloc(x._node_alloc), _root(NULL), _size(0)
 			{
-				std::cout << "Constructor 3 " << std::endl;
+				// std::cout << "Constructor 3 " << std::endl;
 				_begin = _node_alloc.allocate(1);
 				_node_alloc.construct(_begin, m_node());
 				_end = _node_alloc.allocate(1);
 				_node_alloc.construct(_end, m_node());
 				_begin->top = _end;
-				insert(x.begin, x.end);
+				this->insert(x.begin(), x.end());
 			};
 
 			~map()
@@ -221,7 +221,7 @@ namespace ft
 
 			pair<iterator, bool> insert(const value_type &value)
 			{
-				std::cout << "Insert normal " << std::endl;
+				// std::cout << "Insert normal " << std::endl;
 				//Si arbre vide on créer le 1er maillon
 				if (_root == NULL)
 				{
@@ -238,7 +238,7 @@ namespace ft
 				iterator it = this->find(value.first);
 				if (it != this->end())
 					return (ft::make_pair(it, false));
-				std::cout << "Insert : apres find " << std::endl;
+				// std::cout << "Insert : apres find " << std::endl;
 				m_node	*node;
 				m_node	*new_node = _node_alloc.allocate(1);
 				_node_alloc.construct(new_node, m_node(value));
@@ -250,7 +250,7 @@ namespace ft
 				else
 					node = _root;
 				//On parcours l'arbre jusqu'au presque bout pour savoir ou l'on va placer le nouveau maillon
-				std::cout << "Insert : avant recherche " << std::endl;
+				// std::cout << "Insert : avant recherche " << std::endl;
 				while (node->left || node->right)
 				{
 					if (_compare(node->value.first, value.first))
@@ -268,7 +268,7 @@ namespace ft
 							break ;
 					}
 				}
-				std::cout << "Insert : apres recherche " << std::endl;
+				// std::cout << "Insert : apres recherche " << std::endl;
 				new_node->top = node;
 				if (_compare(node->value.first, value.first))
 				{
@@ -287,25 +287,25 @@ namespace ft
 					node->left = new_node;
 				}
 				_size++;
-				std::cout << "Insert : apres find " << std::endl;
-				std::cout << "Insert : size : " << _size << std::endl;
+				// std::cout << "Insert : apres find " << std::endl;
+				// std::cout << "Insert : size : " << _size << std::endl;
 				if (_size > 2)
 					rebalance(new_node);
-				std::cout << "Insert : apres balance " << std::endl;
+				// std::cout << "Insert : apres balance " << std::endl;
 				return (ft::make_pair(iterator(new_node), true));
 			};
 
 			iterator insert (iterator position, const value_type& val)
 			{
 				(void)position;
-				std::cout << "Insert position " << std::endl;
+				// std::cout << "Insert position " << std::endl;
 				return (insert(val).first);
 			};
 
 			template <class InputIterator>
 			void insert (InputIterator first, InputIterator last)
 			{
-				std::cout << "Insert iterator " << std::endl;
+				// std::cout << "Insert iterator " << std::endl;
 				while (first != last)
 				{
 					insert(*first);
@@ -313,81 +313,98 @@ namespace ft
 				}
 			};
 
+			void	print_node(m_node *node)
+			{
+				if (node == NULL)
+					return;
+				// std::cout << "Print Node " << std::endl;
+				// std::cout << "Key : " << node->value.first << std::endl;
+				// std::cout << "Value : " << node->value.second << std::endl;
+			}
+
+			void	print_tree(void)
+			{
+				// std::cout << "Print Tree " << std::endl;
+				// std::cout << "Size : " << _size << std::endl;
+				// std::cout << "Root" << std::endl;
+				// std::cout << "Key : " << _root->value.first << std::endl;
+				// std::cout << "Value : " << _root->value.second << std::endl;
+				// std::cout << "_end " << std::endl;
+				// std::cout << "Key : " << _end->value.first << std::endl;
+				// std::cout << "Value : " << _end->value.second << std::endl;
+				// std::cout << "_begin" << std::endl;
+				// std::cout << "Key : " << _begin->value.first << std::endl;
+				// std::cout << "Value : " << _begin->value.second << std::endl;
+			}
+
 			void erase(iterator position)
 			{
-				std::cout << "Erase" <<std::endl;
-				m_node	*pos = position.get_internal_pointer();
+				// std::cout << "Erase" <<std::endl;
+				m_node	*p = position.get_internal_pointer();
 				m_node	*tmp;
 				m_node	*toBalance;
 
-				if (!pos->right || !pos->left)
+				if (p == _root)
 				{
-					std::cout << "Erase : cas 1" <<std::endl;
-					// A verifier si possible ? car root a toujours un droite et un gauche car c'est begin et end ?????
-					if (pos == _root)
+					if (p->right && !p->left)
 					{
-						std::cout << "Erase : cas 1.1" <<std::endl;
-						if (pos->right)
-						{
-							pos->right->top = NULL;
-							_root = pos->right;
-						}
-						else if (pos->left)
-						{
-							pos->left->top = NULL;
-							_root = pos->left;
-						}
-						else
-						{
-							_begin->top = _end;
-							_root = NULL;
-						}
+						p->right->top = NULL;
+						_root = p->right;
 					}
-					else if (pos->top->right == pos)
+					else if (!p->right && p->left)
 					{
-						std::cout << "Erase : cas 1.2" <<std::endl;
-						if (pos->right)
-							pos->top->right = pos->right;
-						else if (pos->left)
-							pos->top->right = pos->left;
-						else
-							pos->top->right = NULL;
+						p->left->top = NULL;
+						_root = p->left;
 					}
-					else
+					else if (p->right && p->left)
 					{
-						std::cout << "Erase : cas 1.3" <<std::endl;
-						if (pos->right)
-							pos->top->left = pos->right;
-						else if (pos->left)
-							pos->top->left = pos->left;
-						else
-							pos->top->left = NULL;
-					}
-					if (pos->right)
-						pos->right->top = pos->top;
-					else if (pos->left)
-						pos->left->top = pos->top;
-					toBalance = pos->top;
-				}
-				else
-				{
-					std::cout << "Erase : cas 2" <<std::endl;
-					if (pos == _root)
-					{
-						if (pos->right != _end || pos->left != _begin)
+						if (p->right != _end)
 						{
-							m_node 	*temp = pos->find_min(pos->right);
-							m_node	*new_node = _node_alloc.allocate(1);
-							_node_alloc.construct(new_node, m_node());
-							new_node = tmp;
-							if (_root->left)
-								_root->left->top = new_node;
-							if (_root->right)
-								_root->right->top = new_node;
-							_node_alloc.destroy(_root);
-							_node_alloc.deallocate(_root, 1);
-							_root = new_node;
-							toBalance = _root;
+							tmp = p->find_min(p->right);
+							if (tmp->top != p)
+								toBalance = tmp->top;
+							else
+								toBalance = tmp;
+							tmp->left = p->left;
+							p->left->top = tmp;
+							if (tmp != p->right)
+							{
+								tmp->right = p->right;
+								p->right->top = tmp;
+							}
+							if (tmp->top)
+							{
+								if (tmp->top->left == tmp)
+									tmp->top->left = NULL;
+								else
+									tmp->top->right = NULL;
+							}
+							tmp->top = NULL;
+							_root = tmp;
+						}
+						else if (p->left != _begin)
+						{
+							p->left->top = NULL;
+							tmp = p->find_max(p->left);
+							if (tmp->top != p)
+								toBalance = tmp->top;
+							else
+								toBalance = tmp;
+							tmp->left = p->left;
+							if (p->right->top)
+								p->right->top = tmp;
+							tmp->right = p->right;
+							if (p->left)
+								p->left->top = tmp;
+							if (tmp->top)
+							{
+								if (tmp->top->left == tmp)
+									tmp->top->left = NULL;
+								else
+									tmp->top->right = NULL;
+							}
+							tmp->top = NULL;
+							_root = tmp;
 						}
 						else
 						{
@@ -395,87 +412,105 @@ namespace ft
 							_end->left = _begin;
 							_root = NULL;
 						}
-						//COMMENTE car ça sert à balancer et on s'en fou on balance apres non ???
-						// if (p->right != _end)
-						// {
-							// tmp = p->findMin(p->right);
-							// if (tmp->top != p)
-							// 	toBalance = tmp->top;
-							// else
-							// 	toBalance = tmp;
-							// tmp->left = p->left;
-							// p->left->top = tmp;
-							// if (tmp != p->right)
-							// {
-							// 	tmp->right = p->right;
-							// 	p->right->top = tmp;
-							// }
-							// if (tmp->top)
-							// {
-							// 	if (tmp->top->left == tmp)
-							// 		tmp->top->left = NULL;
-							// 	else
-							// 		tmp->top->right = NULL;
-							// }
-							// tmp->top = NULL;
-							// _root = tmp;
-						// }
-						// else if (p->left != _begin)
-						// {
-							// p->left->top = NULL;
-							// tmp = p->findMax(p->left);
-							// if (tmp->top != p)
-							// 	toBalance = tmp->top;
-							// else
-							// 	toBalance = tmp;
-							// tmp->left = p->left;
-							// if (p->right->top)
-							// 	p->right->top = tmp;
-							// tmp->right = p->right;
-							// if (p->left)
-							// 	p->left->top = tmp;
-							// if (tmp->top)
-							// {
-							// 	if (tmp->top->left == tmp)
-							// 		tmp->top->left = NULL;
-							// 	else
-							// 		tmp->top->right = NULL;
-							// }
-							// tmp->top = NULL;
-							// _root = tmp;
-						// }
-						// else
-						// {
-						// 	_begin->top = _end;
-						// 	_end->left = _begin;
-						// 	_root = NULL;
-						// }
 					}
 					else
 					{
-						std::cout << "Erase : cas 3" <<std::endl;
-						pos->top->left = pos->right;
-						pos->right->top = pos->top;
-						m_node	*tmp = pos->find_min(pos->right);
-						tmp->left = pos->left;
-						pos->left->top = tmp;
-						toBalance = pos->top;
-					}
-					_node_alloc.destroy(pos);
-					_node_alloc.deallocate(pos, 1);
-					_size--;
-					if (_size == 0)
-					{
-						_root = NULL;
-						_begin->right = NULL;
-						_begin->left = NULL;
-						_end->right = NULL;
-						_end->left = NULL;
 						_begin->top = _end;
+						_root = NULL;
 					}
-					else if (_size >= 3)
-						balance_tree(toBalance);
 				}
+				else if (!p->right && !p->left)
+				{
+					if (p->top->right == p)
+						p->top->right = NULL;
+					else
+						p->top->left = NULL;
+					toBalance = p->top;
+				}
+				else if (!p->right && p->left)
+				{
+					if (p->top->right == p)
+						p->top->right = p->left;
+					else
+						p->top->left = p->left;
+					p->left->top = p->top;
+					toBalance = p->top;
+				}
+				else if (p->right && !p->left)
+				{
+					if (p->top->right == p)
+						p->top->right = p->right;
+					else
+						p->top->left = p->right;
+					p->right->top = p->top;
+					toBalance = p->top;
+				}
+				else
+				{
+					if (p->left == _begin)
+					{
+						p->top->left = p->right;
+						p->right->top = p->top;
+						m_node *tmp = p->find_min(p->right);
+						tmp->left = p->left;
+						p->left->top = tmp;
+						toBalance = p->top;
+					}
+					else
+					{
+						m_node *max_left = p->find_max(p->left);
+						if (!max_left->left && !max_left->right)
+						{
+							if (max_left == max_left->top->left)
+								max_left->top->left = NULL;
+							else
+								max_left->top->right = NULL;
+							max_left->top = NULL;
+						}
+						else if (max_left->left && !max_left->right)
+						{
+							if (max_left == max_left->top->left)
+								max_left->top->left = max_left->left;
+							else
+								max_left->top->right = max_left->left;
+							max_left->left->top = max_left->top;
+						}
+						else if (!max_left->left && max_left->right)
+						{
+							if (max_left == max_left->top->left)
+								max_left->top->left = max_left->right;
+							else
+								max_left->top->right = max_left->right;
+							max_left->right->top = max_left->top;
+						}
+						max_left->top = p->top;
+						if (p->top->left == p)
+							p->top->left = max_left;
+						else
+							p->top->right = max_left;
+						max_left->left = p->left;
+						if (p->left)
+							p->left->top = max_left;
+						max_left->right = p->right;
+						if (p->right)
+							p->right->top = max_left;
+						toBalance = max_left;
+					}
+				}
+				_node_alloc.destroy(p);
+				_node_alloc.deallocate(p, 1);
+				_size--;
+				if (_size == 0)
+				{
+					_root = NULL;
+					_begin->right = NULL;
+					_begin->left = NULL;
+					_end->right = NULL;
+					_end->left = NULL;
+					_begin->top = _end;
+				}
+				else if (_size >= 3)
+					rebalance(toBalance);
 			};
 
 			size_type erase (const key_type &key)
@@ -627,7 +662,7 @@ namespace ft
 
 			m_node		*right_rotate(m_node *node)
 			{
-				std::cout << "right rotate" <<std::endl;
+				// std::cout << "right rotate" <<std::endl;
 				m_node *tmp = node->left;
 				if (tmp != NULL)
 				{
@@ -662,7 +697,7 @@ namespace ft
 
 			m_node		*left_rotate(m_node *node)
 			{
-				std::cout << "left rotate" <<std::endl;
+				// std::cout << "left rotate" <<std::endl;
 				m_node *tmp = node->right;
 				if (tmp != NULL)
 				{
@@ -712,7 +747,7 @@ namespace ft
 
 			int			getBalanceFactor(m_node *node)
 			{
-				std::cout << "balance factor" <<std::endl;
+				// std::cout << "balance factor" <<std::endl;
 				return (retHeight(node->right) - retHeight(node->left));
 			};
 
@@ -727,7 +762,7 @@ namespace ft
 			{
 				if (node == NULL)
 					return ;
-				std::cout << "Rebalance" <<std::endl;
+				// std::cout << "Rebalance" <<std::endl;
 				while (node->top)
 				{
 					set_height(node);
@@ -740,7 +775,7 @@ namespace ft
 
 			m_node		*balance_tree(m_node *node)
 			{
-				std::cout << "balance tree" <<std::endl;
+				// std::cout << "balance tree" <<std::endl;
 				m_node		*ret;
 				int bf = getBalanceFactor(node);
 				if (bf < -1)
