@@ -15,16 +15,16 @@ namespace ft
 		int		height;
 
 		Node(): top(NULL), left(NULL), right(NULL), value(), height(0)
-		{}
+		{};
 
 		Node(const Pair &data): top(NULL), left(NULL), right(NULL), value(data), height(0)
-		{}
+		{};
 
 		Node(const Node &x): top(x.top), left(x.left), right(x.right), value(x.value), height(x.height)
-		{}
+		{};
 
 		~Node()
-		{}
+		{};
 
 		Node &operator=(const Node &x)
 		{
@@ -36,7 +36,7 @@ namespace ft
 				value = x.value;
 			}
 			return (*this);
-		}
+		};
 
 		Node *find_min(Node *node)
 		{
@@ -45,7 +45,7 @@ namespace ft
 			while (node->left)
 				node = node->left;
 			return (node);
-		}
+		};
 
 		Node *find_max(Node *node)
 		{
@@ -54,7 +54,7 @@ namespace ft
 			while (node->right)
 				node = node->right;
 			return (node);
-		}
+		};
 
 		Node *next_node()
 		{
@@ -67,8 +67,8 @@ namespace ft
                 tmp = pa;
                 pa = tmp->top;
             }
-            return pa;
-		}
+            return (pa);
+		};
 
 		Node *previous_node()
 		{
@@ -80,8 +80,8 @@ namespace ft
                 tmp = pa;
                 pa = tmp->top;
             }
-            return pa;
-		}
+            return (pa);
+		};
 	};
 }
 

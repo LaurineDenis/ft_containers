@@ -140,6 +140,14 @@ namespace ft
 				}
 			};
 
+			void			print_vector_const() const
+			{
+				for (size_type i = 0; i < _size_filled; i++)
+				{
+					std::cout << "_array["<< i <<"] = " << _array[i] << std::endl;
+				}
+			};
+
 			//print
 			void			print_element()
 			{
@@ -531,6 +539,7 @@ namespace ft
 				size_t		end_size = 0;
 				size_t position_size = 0;
 
+
 				// cas 2 on ajoute a la fin
 				if (position == end() || _size_filled == 0)
 				{
@@ -543,11 +552,20 @@ namespace ft
 				// cas 2 : rajouter en plein milieux 
 				else 
 				{
-
 					T tmp[_size_filled + count];
+					T tmp2[_size_filled + count];
 					size_type y = 0;
+					size_type k = 0;
+					
+					save = first;
+					while(save != last)
+						tmp2[k++] = *save++;
+					k = 0;
+
 					reserve(count);// enelever +size
 					_size_filled += count;
+
+
 					while (begin_index != position)
 					{
 						position_size++;
@@ -560,11 +578,16 @@ namespace ft
 						begin_index++;
 					}
 					for (size_t i = 0; i != position_size; i++)
-							tmp[y++] = _array[i];
+						tmp[y++] = _array[i];
 					while (first != last)
-							tmp[y++] = *first++;
+					{
+						tmp[y] = tmp2[k];
+						*first++;
+						y++;
+						k++;
+					}
 					for (size_t i = y; i != end_size; i++)
-							tmp[i] = _array[position_size++];
+						tmp[i] = _array[position_size++];
 					for (size_type i = 0; i < _size_filled; i++)
 						_array[i] = tmp[i];
 				}

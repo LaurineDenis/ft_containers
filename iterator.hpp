@@ -1,7 +1,9 @@
-#ifndef ITERATOR_HPP
-#define ITERATOR_HPP
+#ifndef ITERATOR_VECTOR_HPP
+#define ITERATOR_VECTOR_HPP
 
 #include "iterator_traits.hpp"
+
+
 
 namespace ft
 {
@@ -94,7 +96,8 @@ namespace ft
 
 			iterator_vector&	operator-=(difference_type n)
 			{
-				_ptr -= n;
+                if (_ptr != 0)
+				    _ptr -= n;
 				return (*this);
 			};
 
@@ -258,8 +261,11 @@ namespace ft
 
 			reverse_iterator& operator-=(difference_type n)
 			{
-				this->_ptr = this->_ptr + n;
+                // std::cout << "_pts = " << *_ptr+n << std::endl;
+          
+				this->_ptr +=  n;
 				return (*this);
+
 			};
 
 

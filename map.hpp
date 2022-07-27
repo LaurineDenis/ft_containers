@@ -214,19 +214,21 @@ namespace ft
 			mapped_type& operator[](const key_type& k)
 			{
 				//return (*(insert(pair(k, mapped_type())).first)).second;
-				return (*(insert(ft::make_pair(k, mapped_type())).first)).second;
+				// std::cout << "To insert with [ ] K : " << k << std::endl;
+				return (*(this->insert(value_type(k, mapped_type())).first)).second;
+				// return (*(insert(ft::make_pair(k, mapped_type())).first)).second;
 			};
 
 			//Modifiers
 
-			pair<iterator, bool> insert(const value_type &value)
+			pair<iterator, bool> insert(const value_type &val)
 			{
 				// std::cout << "Insert normal " << std::endl;
 				//Si arbre vide on créer le 1er maillon
-				if (_root == NULL)
+				if (!_root)
 				{
 					_root = _node_alloc.allocate(1);
-					_node_alloc.construct(_root, m_node(value));
+					_node_alloc.construct(_root, m_node(val));
 					_root->left = _begin;
 					_root->right = _end;
 					_end->top = _root;
@@ -234,26 +236,21 @@ namespace ft
 					_size = 1;
 					return (ft::make_pair(iterator(_root), true));
 				}
-				//Si la valeur existe déja dans notre arbre on le refait pas
-				iterator it = this->find(value.first);
+				iterator it = this->find(val.first);
 				if (it != this->end())
 					return (ft::make_pair(it, false));
-				// std::cout << "Insert : apres find " << std::endl;
-				m_node	*node;
-				m_node	*new_node = _node_alloc.allocate(1);
-				_node_alloc.construct(new_node, m_node(value));
-				//détermine si on part du début ou de la fin de l'arbre selon la valeur
-				if (_compare(_end->top->value.first, value.first))
+				m_node *node;
+				m_node *new_n = _node_alloc.allocate(1);
+				_node_alloc.construct(new_n, m_node(val));
+				if (_compare(_end->top->value.first, val.first))
 					node = _end->top;
-				else if (!_compare(_begin->top->value.first, value.first))
+				else if (!_compare(_begin->top->value.first, val.first))
 					node = _begin->top;
 				else
-					node = _root;
-				//On parcours l'arbre jusqu'au presque bout pour savoir ou l'on va placer le nouveau maillon
-				// std::cout << "Insert : avant recherche " << std::endl;
-				while (node->left || node->right)
+					node = _root;			
+				while (node->right || node->left)
 				{
-					if (_compare(node->value.first, value.first))
+					if (_compare(node->value.first, val.first))
 					{
 						if (node->right && node->right != _end)
 							node = node->right;
@@ -262,37 +259,33 @@ namespace ft
 					}
 					else
 					{
-						if (node->left && node->left != _end)
+						if (node->left && node->left != _begin)
 							node = node->left;
 						else
 							break ;
 					}
 				}
-				// std::cout << "Insert : apres recherche " << std::endl;
-				new_node->top = node;
-				if (_compare(node->value.first, value.first))
+				new_n->top = node;
+				if (_compare(node->value.first, val.first))
 				{
-					new_node->right = node->right;
-					if (new_node->right)
-						new_node->right->top = new_node;
-					new_node->left = NULL;
-					node->right = new_node;
+					new_n->right = node->right;
+					if (new_n->right)
+						new_n->right->top = new_n;
+					new_n->left = NULL;
+					node->right = new_n;
 				}
 				else
 				{
-					new_node->left = node->left;
-					if (new_node->left)
-						new_node->left->top = new_node;
-					new_node->right = NULL;
-					node->left = new_node;
+					new_n->left = node->left;
+					if (new_n->left)
+						new_n->left->top = new_n;
+					new_n->right = NULL;
+					node->left = new_n;
 				}
 				_size++;
-				// std::cout << "Insert : apres find " << std::endl;
-				// std::cout << "Insert : size : " << _size << std::endl;
-				if (_size > 2)
-					rebalance(new_node);
-				// std::cout << "Insert : apres balance " << std::endl;
-				return (ft::make_pair(iterator(new_node), true));
+				if (_size >= 3)
+					rebalance(new_n);
+				return ft::make_pair(new_n, true);
 			};
 
 			iterator insert (iterator position, const value_type& val)
@@ -313,29 +306,29 @@ namespace ft
 				}
 			};
 
-			void	print_node(m_node *node)
-			{
-				if (node == NULL)
-					return;
-				// std::cout << "Print Node " << std::endl;
-				// std::cout << "Key : " << node->value.first << std::endl;
-				// std::cout << "Value : " << node->value.second << std::endl;
-			}
+			// void	print_node(m_node *node)
+			// {
+			// 	if (node == NULL)
+			// 		return;
+			// 	// std::cout << "Print Node " << std::endl;
+			// 	// std::cout << "Key : " << node->value.first << std::endl;
+			// 	// std::cout << "Value : " << node->value.second << std::endl;
+			// }
 
-			void	print_tree(void)
-			{
-				// std::cout << "Print Tree " << std::endl;
-				// std::cout << "Size : " << _size << std::endl;
-				// std::cout << "Root" << std::endl;
-				// std::cout << "Key : " << _root->value.first << std::endl;
-				// std::cout << "Value : " << _root->value.second << std::endl;
-				// std::cout << "_end " << std::endl;
-				// std::cout << "Key : " << _end->value.first << std::endl;
-				// std::cout << "Value : " << _end->value.second << std::endl;
-				// std::cout << "_begin" << std::endl;
-				// std::cout << "Key : " << _begin->value.first << std::endl;
-				// std::cout << "Value : " << _begin->value.second << std::endl;
-			}
+			// void	print_tree(void)
+			// {
+			// 	// std::cout << "Print Tree " << std::endl;
+			// 	// std::cout << "Size : " << _size << std::endl;
+			// 	// std::cout << "Root" << std::endl;
+			// 	// std::cout << "Key : " << _root->value.first << std::endl;
+			// 	// std::cout << "Value : " << _root->value.second << std::endl;
+			// 	// std::cout << "_end " << std::endl;
+			// 	// std::cout << "Key : " << _end->value.first << std::endl;
+			// 	// std::cout << "Value : " << _end->value.second << std::endl;
+			// 	// std::cout << "_begin" << std::endl;
+			// 	// std::cout << "Key : " << _begin->value.first << std::endl;
+			// 	// std::cout << "Value : " << _begin->value.second << std::endl;
+			// }
 
 			void erase(iterator position)
 			{
@@ -537,7 +530,9 @@ namespace ft
 			{
 				m_node		*tmp_node;
 				size_type	size_tmp;
-
+				
+				if (x == *this)
+					return ;
 				tmp_node = x._root;
 				x._root = _root;
 				_root = tmp_node;
@@ -554,45 +549,44 @@ namespace ft
 
 			void clear()
 			{
-				erase(begin(), end());
+				this->erase(this->begin(), this->end());
+				// erase(begin(), end());
 			};
 
 			iterator find (const key_type& k)
 			{
-				m_node	*node;
+				m_node *node;
 
 				node = _root;
-				while (node && node != _end && node != _begin)
+				while (node && node != _end && node != _begin && (_compare(node->value.first, k) || _compare(k, node->value.first)))
 				{
-					if (node->value.first == k)
-						return (node);
 					if (_compare(node->value.first, k))
 						node = node->right;
 					else
 						node = node->left;
 				}
-				if (node != _root)
+				if (node && node != _end && node != _begin && !_compare(node->value.first, k) && !_compare(k, node->value.first))
 					return (iterator(node));
-				return (iterator(_end));
+				else
+					return (iterator(_end));
 			};
 
 			const_iterator find (const key_type& k) const
 			{
-				m_node	*node;
+				m_node *node;
 
 				node = _root;
-				while (node && node != _end && node != _begin)
+				while (node && node != _end && node != _begin && (_compare(node->value.first, k) || _compare(k, node->value.first)))
 				{
-					if (node->node.first == k)
-						return (node);
-					if (_compare(node->node.first, k))
+					if (_compare(node->value.first, k))
 						node = node->right;
 					else
 						node = node->left;
 				}
-				if (node != _root)
+				if (node && node != _end && node != _begin && !_compare(node->value.first, k) && !_compare(k, node->value.first))
 					return (const_iterator(node));
-				return (const_iterator(_end));
+				else
+					return (const_iterator(_end));
 			};
 
 
@@ -627,7 +621,7 @@ namespace ft
 			{
 				for (iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, k))
+					if (_compare(k, iter->first))
 						return (iter);
 				}
 				return (end());
@@ -637,7 +631,7 @@ namespace ft
 			{
 				for (const_iterator iter = begin(); iter != end(); iter++)
 				{
-					if (!_compare(iter->first, k))
+					if (_compare(k, iter->first))
 						return (iter);
 				}
 				return (end());
@@ -788,7 +782,7 @@ namespace ft
 						ret = right_rotate(node);
 					}	
 				}
-				else if (bf > 1)
+				if (bf > 1)
 				{
 					if (getBalanceFactor(node->right) >= 0)
 						ret = left_rotate(node);
@@ -802,6 +796,60 @@ namespace ft
 			};
 
 	};
+
+	//Non members operators
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator==(const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		typename ft::map<Key, T>::const_iterator rit = rhs.begin();
+		typename ft::map<Key, T>::const_iterator lit = lhs.begin();
+		if (lhs.size() != rhs.size())
+			return false;
+		while (rit != rhs.end() && lit != lhs.end())
+		{
+			if (*rit != *lit)
+				return false;
+			rit++;
+			lit++;
+		}
+		return true;
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator!=(const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return !(rhs == lhs);
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator< (const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator<=(const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return !(lhs > rhs);
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator> (const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return rhs < lhs;
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	bool operator>=(const ft::map<Key,T,Compare,Alloc> &lhs, const ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return !(lhs < rhs);
+	}
+
+	template<class Key, class T, class Compare, class Alloc>
+	void swap(ft::map<Key,T,Compare,Alloc> &lhs, ft::map<Key,T,Compare,Alloc> &rhs)
+	{
+		return lhs.swap(rhs);
+	}
 }
 
 #endif
